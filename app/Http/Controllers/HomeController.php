@@ -41,6 +41,11 @@ class HomeController extends Controller
         return view('pages.refund-policy');
     }
 
+    public function termsOfService()
+    {
+        return view('pages.terms-of-service ');
+    }
+
     public function iptvSubscription()
     {
         return view('pages.iptv-subscription');

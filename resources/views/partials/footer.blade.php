@@ -9,7 +9,7 @@
                     <li><a href="{{ route('shipping-policy') }}">Shipping Policy</a></li>
                     <li><a href="{{ route('privacy-policy') }}">Privacy Policy</a></li>
                     <li><a href="{{ route('refund-policy') }}">Refund Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="{{ route('terms-of-service') }}">Terms of Service</a></li>
                     <li><a href="{{ route('contact-us') }}">Contact Us</a></li>
                     <li><a href="{{ route('iptv-playlist') }}">Channels</a></li>
                     <li><a href="{{ route('faqs') }}">FAQs</a></li>

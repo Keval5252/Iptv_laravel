@@ -10,6 +10,7 @@ Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact-u
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::get('/refund-policy', [HomeController::class, 'refundPolicy'])->name('refund-policy');
+Route::get('/terms-of-service', [HomeController::class, 'termsOfService'])->name('terms-of-service');
 Route::get('/iptv-subscription', [HomeController::class, 'iptvSubscription'])->name('iptv-subscription');
 Route::get('/multi-connections', [HomeController::class, 'multiConnections'])->name('multi-connections');
 Route::get('/multi-connections-prices', [HomeController::class, 'multiConnectionsPrices'])->name('multi-connections-prices');
