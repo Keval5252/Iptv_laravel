@@ -16,6 +16,11 @@ class HomeController extends Controller
         return view('pages.about-us');
     }
 
+    public function shippingPolicy()
+    {
+        return view('pages.shipping-policy');
+    }
+
     public function contactUs()
     {
         return view('pages.contact-us');

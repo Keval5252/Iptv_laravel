@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
+Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy');
 Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact-us');
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');

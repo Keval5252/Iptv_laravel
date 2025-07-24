@@ -6,7 +6,7 @@
                 <div class="uppercase text-sm font-semibold mb-4 tracking-widest">Company</div>
                 <ul class="space-y-2 text-gray-800">
                     <li><a href="{{ route('about-us') }}">About Us</a></li>
-                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="{{ route('shipping-policy') }}">Shipping Policy</a></li>
                     <li><a href="{{ route('privacy-policy') }}">Privacy Policy</a></li>
                     <li><a href="{{ route('refund-policy') }}">Refund Policy</a></li>
                     <li><a href="#">Terms of Service</a></li>
