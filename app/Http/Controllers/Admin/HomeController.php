@@ -49,7 +49,8 @@ class HomeController extends Controller
 
     public function iptvSubscription()
     {
-        return view('pages.iptv-subscription');
+        $plans = \App\Models\SubscriptionPlan::active()->ordered()->get();
+        return view('pages.iptv-subscription', compact('plans'));
     }
 
     public function multiConnections()

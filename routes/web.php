@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\HomeController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
 use Illuminate\Support\Facades\Auth;     
 
 /*
@@ -81,7 +82,7 @@ Route::get('/forgot/password', [UserController::class, 'forgot_password'])->name
 Route::post('/forgot/password/mail', [UserController::class, 'password_mail'])->name('admin.forgot.mail');
 Route::post('admin/login', [UserController::class, 'admin_login'])->name('admin.login');
 
-Route::name('admin.')->namespace('Admin')->group(function () {
+Route::name('admin.')->group(function () {
     Route::group(['prefix' => 'admin', 'middleware' => ['admin.check']], function () {
         Route::get('/', [AdminController::class, 'index'])->name('home');
        
@@ -90,6 +91,11 @@ Route::name('admin.')->namespace('Admin')->group(function () {
         Route::get('/password', [UserController::class, 'password'])->name('password');
         Route::post('/password/change', [UserController::class, 'change_password'])->name('password.update');
         Route::post('/profile/update', [UserController::class, 'update_profile'])->name('profile.update');
+
+        // Subscription Plans Management
+        Route::resource('subscription-plans', \App\Http\Controllers\Admin\SubscriptionPlanController::class);
+        Route::post('subscription-plans/{subscriptionPlan}/toggle-status', [\App\Http\Controllers\Admin\SubscriptionPlanController::class, 'toggleStatus'])->name('subscription-plans.toggle-status');
+        Route::post('subscription-plans/update-order', [\App\Http\Controllers\Admin\SubscriptionPlanController::class, 'updateOrder'])->name('subscription-plans.update-order');
 
     });
 });

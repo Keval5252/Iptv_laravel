@@ -74,6 +74,15 @@
                     </a>
                 </li>
             @endif
+            
+            @if ($user->id == 1 || $user->can('subscription-plans'))
+                <li class="{{ request()->is('admin/subscription-plans*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.subscription-plans.index') }}" title="Subscription Plans" data-filter-tags="subscription plans">
+                        <i class="fal fa-tv"></i>
+                        <span class="nav-link-text" data-i18n="nav.subscription_plans">Subscription Plans</span>
+                    </a>
+                </li>
+            @endif
         </ul>
         <div class="filter-message js-filter-message bg-success-600"></div>
     </nav>
