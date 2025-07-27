@@ -28,18 +28,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (Schema::hasTable('settings')) {
-            $settings = Setting::latest()->first();
-            if($settings){
-                config()->set('settings', $settings);
-                Config::set([
-                    'app.name' => \config('settings.name'),
-                    'app.url' => \config('settings.url'),
-                    'app.env' => \config('settings.env'),
-                    'app.debug' => \config('settings.debug'),
-                ]);
-            }
-        }
         
     }
 }
