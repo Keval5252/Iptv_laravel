@@ -97,6 +97,17 @@ Route::name('admin.')->group(function () {
         Route::post('subscription-plans/{subscriptionPlan}/toggle-status', [\App\Http\Controllers\Admin\SubscriptionPlanController::class, 'toggleStatus'])->name('subscription-plans.toggle-status');
         Route::post('subscription-plans/update-order', [\App\Http\Controllers\Admin\SubscriptionPlanController::class, 'updateOrder'])->name('subscription-plans.update-order');
 
+        // Menu Management
+        Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class);
+        Route::post('menus/{menu}/toggle-status', [\App\Http\Controllers\Admin\MenuController::class, 'toggleStatus'])->name('menus.toggle-status');
+        Route::post('menus/update-order', [\App\Http\Controllers\Admin\MenuController::class, 'updateOrder'])->name('menus.update-order');
+
+        // Menu Items Management
+        Route::resource('menu-items', \App\Http\Controllers\Admin\MenuItemController::class);
+        Route::post('menu-items/{menuItem}/toggle-status', [\App\Http\Controllers\Admin\MenuItemController::class, 'toggleStatus'])->name('menu-items.toggle-status');
+        Route::post('menu-items/update-order', [\App\Http\Controllers\Admin\MenuItemController::class, 'updateOrder'])->name('menu-items.update-order');
+        Route::get('menu-items/by-menu/{menu}', [\App\Http\Controllers\Admin\MenuItemController::class, 'getByMenu'])->name('menu-items.by-menu');
+
     });
 });
 

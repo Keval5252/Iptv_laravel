@@ -10,10 +10,22 @@
     <nav class="flex-1 px-6 py-4">
         <ul class="space-y-4 text-gray-700 text-xl md:text-lg font-medium">
             <li><a href="#" class="hover:border-b-2 border-primary transition-all">MY ACCOUNT</a></li>
-            <li><a href="{{ route('iptv-subscription') }}" class="hover:border-b-2 border-primary transition-all">IPTV SUBSCRIPTION</a></li>
-            <li><a href="{{ route('adult-channel') }}" class="hover:border-b-2 border-primary transition-all">ADULT IPTV</a></li>
-            <li><a href="{{ route('multi-connections') }}" class="hover:border-b-2 border-primary transition-all">ADULT IPTV MULTI CONNECTIONS</a></li>
-            <li><a href="{{ route('multi-connections-prices') }}" class="hover:border-b-2 border-primary transition-all">MULTI CONNECTIONS SUBSCRIPTION</a></li>
+            
+            @php
+                $dynamicMenuItems = getMenuItems('drawer');
+            @endphp
+            
+            @foreach($dynamicMenuItems as $menuItem)
+                <li>
+                    <a href="{{ $menuItem->final_url }}" target="{{ $menuItem->target }}" 
+                       class="hover:border-b-2 border-primary transition-all {{ isMenuActive($menuItem) ? 'border-primary text-primary' : '' }}">
+                        @if($menuItem->icon)<i class="{{ $menuItem->icon }} mr-2"></i>@endif
+                        {{ $menuItem->title }}
+                    </a>
+                </li>
+            @endforeach
+            
+            <!-- Static Menu Items -->
             <li><a href="{{ route('iptv-playlist') }}" class="hover:border-b-2 border-primary transition-all">CHANNELS LIST</a></li>
             <li><a href="#" class="hover:border-b-2 border-primary transition-all">IPTV RESELLERS</a></li>
             <li class="group">

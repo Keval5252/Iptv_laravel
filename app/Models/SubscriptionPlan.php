@@ -19,7 +19,8 @@ class SubscriptionPlan extends Model
         'is_popular',
         'is_active',
         'sort_order',
-        'buy_link'
+        'buy_link',
+        'display_pages'
     ];
 
     protected $casts = [
@@ -27,7 +28,8 @@ class SubscriptionPlan extends Model
         'is_popular' => 'boolean',
         'is_active' => 'boolean',
         'price' => 'decimal:2',
-        'original_price' => 'decimal:2'
+        'original_price' => 'decimal:2',
+        'display_pages' => 'array'
     ];
 
     public function scopeActive($query)
@@ -43,6 +45,11 @@ class SubscriptionPlan extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order', 'asc');
+    }
+
+    public function scopeByPage($query, $page)
+    {
+        return $query->whereJsonContains('display_pages', $page);
     }
 
     public function getFormattedPriceAttribute()

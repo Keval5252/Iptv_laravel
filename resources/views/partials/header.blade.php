@@ -17,18 +17,21 @@
         </div>
         <nav class="flex-1 min-w-0 hidden lg:block">
             <ul class="flex gap-4 flex-nowrap items-center overflow-x-auto hide-scrollbar">
-                <li><a href="{{ route('iptv-subscription') }}"
-                        class="text-sm font-medium text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary transition-all duration-200 whitespace-nowrap">IPTV
-                        SUBSCRIPTION</a></li>
-                <li><a href="{{ route('adult-channel') }}"
-                        class="text-sm font-medium text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary transition-all duration-200 whitespace-nowrap">ADULT
-                        IPTV</a></li>
-                <li><a href="{{ route('multi-connections') }}"
-                        class="text-sm font-medium text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary transition-all duration-200 whitespace-nowrap">ADULT
-                        IPTV MULTI</a></li>
-                <li><a href="{{ route('multi-connections-prices') }}"
-                        class="text-sm font-medium text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary transition-all duration-200 whitespace-nowrap">MULTI
-                        CONNECTIONS SUBSCRIPTION</a></li>
+                @php
+                    $dynamicMenuItems = getMenuItems('header');
+                @endphp
+                
+                @foreach($dynamicMenuItems as $menuItem)
+                    <li>
+                        <a href="{{ $menuItem->final_url }}" target="{{ $menuItem->target }}"
+                           class="text-sm font-medium text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary transition-all duration-200 whitespace-nowrap {{ isMenuActive($menuItem) ? 'border-primary text-primary' : '' }}">
+                            @if($menuItem->icon)<i class="{{ $menuItem->icon }} mr-1"></i>@endif
+                            {{ $menuItem->title }}
+                        </a>
+                    </li>
+                @endforeach
+                
+                <!-- Static Menu Items -->
                 <li><a href="{{ route('iptv-playlist') }}"
                         class="text-sm font-medium text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary transition-all duration-200 whitespace-nowrap">CHANNELS
                         LIST</a></li>

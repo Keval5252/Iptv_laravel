@@ -83,6 +83,24 @@
                     </a>
                 </li>
             @endif
+            
+            @if ($user->id == 1 || $user->can('menus'))
+                <li class="{{ request()->is('admin/menus*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.menus.index') }}" title="Menu Management" data-filter-tags="menu management">
+                        <i class="fal fa-bars"></i>
+                        <span class="nav-link-text" data-i18n="nav.menus">Menu Management</span>
+                    </a>
+                </li>
+            @endif
+            
+            @if ($user->id == 1 || $user->can('menu-items'))
+                <li class="{{ request()->is('admin/menu-items*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.menu-items.index') }}" title="Menu Items" data-filter-tags="menu items">
+                        <i class="fal fa-list"></i>
+                        <span class="nav-link-text" data-i18n="nav.menu_items">Menu Items</span>
+                    </a>
+                </li>
+            @endif
         </ul>
         <div class="filter-message js-filter-message bg-success-600"></div>
     </nav>

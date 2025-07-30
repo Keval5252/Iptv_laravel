@@ -38,6 +38,8 @@ class SubscriptionPlanController extends Controller
             'price' => 'required|numeric|min:0',
             'original_price' => 'required|numeric|min:0',
             'features' => 'nullable|array',
+            'display_pages' => 'required|array|min:1',
+            'display_pages.*' => 'string|in:home,iptv-subscription,adult-channel,multi-connections,multi-connections-prices',
             'is_popular' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
@@ -50,6 +52,7 @@ class SubscriptionPlanController extends Controller
 
         $data = $request->all();
         $data['features'] = $request->input('features', []);
+        $data['display_pages'] = $request->input('display_pages', []);
         $data['is_popular'] = $request->has('is_popular');
         $data['is_active'] = $request->has('is_active');
 
@@ -87,6 +90,8 @@ class SubscriptionPlanController extends Controller
             'price' => 'required|numeric|min:0',
             'original_price' => 'required|numeric|min:0',
             'features' => 'nullable|array',
+            'display_pages' => 'required|array|min:1',
+            'display_pages.*' => 'string|in:home,iptv-subscription,adult-channel,multi-connections,multi-connections-prices',
             'is_popular' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
@@ -99,6 +104,7 @@ class SubscriptionPlanController extends Controller
 
         $data = $request->all();
         $data['features'] = $request->input('features', []);
+        $data['display_pages'] = $request->input('display_pages', []);
         $data['is_popular'] = $request->has('is_popular');
         $data['is_active'] = $request->has('is_active');
 

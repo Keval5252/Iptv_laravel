@@ -201,6 +201,56 @@
 
                         <div class="mb-3">
                             <label class="form-label">
+                                <i class="fa fa-globe mr-1"></i>Display Pages *
+                            </label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="display_home" name="display_pages[]" 
+                                               value="home" {{ in_array('home', old('display_pages', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="display_home">
+                                            Home Page
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="display_iptv_subscription" name="display_pages[]" 
+                                               value="iptv-subscription" {{ in_array('iptv-subscription', old('display_pages', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="display_iptv_subscription">
+                                            IPTV SUBSCRIPTION Page
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="display_adult_iptv" name="display_pages[]" 
+                                               value="adult-channel" {{ in_array('adult-channel', old('display_pages', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="display_adult_iptv">
+                                            ADULT IPTV Page
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="display_adult_iptv_multi" name="display_pages[]" 
+                                               value="multi-connections" {{ in_array('multi-connections', old('display_pages', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="display_adult_iptv_multi">
+                                            ADULT IPTV MULTI Page
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="display_multi_connections" name="display_pages[]" 
+                                               value="multi-connections-prices" {{ in_array('multi-connections-prices', old('display_pages', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="display_multi_connections">
+                                            MULTI CONNECTIONS SUBSCRIPTION Page
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            @error('display_pages')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
                                 <i class="fa fa-list mr-1"></i>Features
                             </label>
                             <div id="features-container">
