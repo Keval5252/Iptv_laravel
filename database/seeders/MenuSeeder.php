@@ -49,7 +49,7 @@ class MenuSeeder extends Seeder
         MenuItem::create([
             'menu_id' => $headerMenu->id,
             'title' => 'ADULT IPTV MULTI',
-            'route_name' => 'adult-channel',
+            'route_name' => 'multi-connections',
             'target' => '_self',
             'icon' => 'fa fa-star-o',
             'is_active' => true,
@@ -60,7 +60,7 @@ class MenuSeeder extends Seeder
         MenuItem::create([
             'menu_id' => $headerMenu->id,
             'title' => 'MULTI CONNECTIONS SUBSCRIPTION',
-            'route_name' => 'multi-connections',
+            'route_name' => 'multi-connections-prices',
             'target' => '_self',
             'icon' => 'fa fa-users',
             'is_active' => true,
@@ -103,7 +103,7 @@ class MenuSeeder extends Seeder
         MenuItem::create([
             'menu_id' => $drawerMenu->id,
             'title' => 'ADULT IPTV MULTI',
-            'route_name' => 'adult-channel',
+            'route_name' => 'multi-connections',
             'target' => '_self',
             'icon' => 'fa fa-star-o',
             'is_active' => true,
@@ -114,7 +114,7 @@ class MenuSeeder extends Seeder
         MenuItem::create([
             'menu_id' => $drawerMenu->id,
             'title' => 'MULTI CONNECTIONS SUBSCRIPTION',
-            'route_name' => 'multi-connections',
+            'route_name' => 'multi-connections-prices',
             'target' => '_self',
             'icon' => 'fa fa-users',
             'is_active' => true,
