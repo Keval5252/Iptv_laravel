@@ -7,7 +7,40 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name') }}</title>
+    <!-- SEO Meta Tags -->
+    <title>@yield('title', 'IPTV Subscription - Premium TV Streaming Service')</title>
+    <meta name="description" content="@yield('description', 'Get the best IPTV subscription with premium channels, movies, and TV shows. High-quality streaming on all devices including Firestick, Android, Smart TV, and more.')">
+    <meta name="keywords" content="@yield('keywords', 'IPTV, IPTV subscription, streaming TV, premium channels, Firestick IPTV, Android IPTV, Smart TV streaming')">
+    <meta name="author" content="@yield('author', 'IPTV Service')">
+    <meta name="robots" content="@yield('robots', 'index, follow')">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="@yield('og_title', 'IPTV Subscription - Premium TV Streaming Service')">
+    <meta property="og:description" content="@yield('og_description', 'Get the best IPTV subscription with premium channels, movies, and TV shows. High-quality streaming on all devices.')">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:url" content="@yield('og_url', request()->url())">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:site_name" content="{{ config('app.name', 'IPTV Service') }}">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
+    <meta name="twitter:title" content="@yield('twitter_title', 'IPTV Subscription - Premium TV Streaming Service')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Get the best IPTV subscription with premium channels, movies, and TV shows.')">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('images/twitter-image.jpg'))">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="@yield('canonical', request()->url())">
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="language" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta name="revisit-after" content="7 days">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    @yield('structured_data', '{}')
+    </script>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>

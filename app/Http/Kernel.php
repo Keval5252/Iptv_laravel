@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
-        'apilogs' => \App\Http\Middleware\LogRoute::class
+        'apilogs' => \App\Http\Middleware\LogRoute::class,
+        'seo' => \App\Http\Middleware\SeoMiddleware::class
     ];
 }

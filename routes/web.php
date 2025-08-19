@@ -8,7 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
-use Illuminate\Support\Facades\Auth;     
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,32 +22,37 @@ use Illuminate\Support\Facades\Auth;
 */
 
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
-Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy');
-Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact-us');
-Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
-Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
-Route::get('/refund-policy', [HomeController::class, 'refundPolicy'])->name('refund-policy');
-Route::get('/terms-of-service', [HomeController::class, 'termsOfService'])->name('terms-of-service');
-Route::get('/iptv-subscription', [HomeController::class, 'iptvSubscription'])->name('iptv-subscription');
-Route::get('/multi-connections', [HomeController::class, 'multiConnections'])->name('multi-connections');
-Route::get('/multi-connections-prices', [HomeController::class, 'multiConnectionsPrices'])->name('multi-connections-prices');
-Route::get('/iptv-playlist', [HomeController::class, 'iptvPlaylist'])->name('iptv-playlist');
-Route::get('/adult-channel', [HomeController::class, 'adultChannel'])->name('adult-channel');
-Route::get('/best-iptv-for-firestick-2022', [HomeController::class, 'bestIptvForFirestick'])->name('best-iptv-for-firestick-2022');
+Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('seo');
+Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us')->middleware('seo');
+Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping-policy')->middleware('seo');
+Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact-us')->middleware('seo');
+Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs')->middleware('seo');
+Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy')->middleware('seo');
+Route::get('/refund-policy', [HomeController::class, 'refundPolicy'])->name('refund-policy')->middleware('seo');
+Route::get('/terms-of-service', [HomeController::class, 'termsOfService'])->name('terms-of-service')->middleware('seo');
+Route::get('/iptv-subscription', [HomeController::class, 'iptvSubscription'])->name('iptv-subscription')->middleware('seo');
+Route::get('/multi-connections', [HomeController::class, 'multiConnections'])->name('multi-connections')->middleware('seo');
+Route::get('/multi-connections-prices', [HomeController::class, 'multiConnectionsPrices'])->name('multi-connections-prices')->middleware('seo');
+Route::get('/iptv-playlist', [HomeController::class, 'iptvPlaylist'])->name('iptv-playlist')->middleware('seo');
+Route::get('/adult-channel', [HomeController::class, 'adultChannel'])->name('adult-channel')->middleware('seo');
+Route::get('/best-iptv-for-firestick-2022', [HomeController::class, 'bestIptvForFirestick'])->name('best-iptv-for-firestick-2022')->middleware('seo');
+
+// SEO Routes
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/generate-sitemap', [App\Http\Controllers\SitemapController::class, 'generateSitemap'])->name('generate.sitemap');
+Route::get('/test-seo', function() { return view('test-seo'); })->name('test-seo')->middleware('seo');
 
 // Operation Guides
-Route::get('/operation-guide-android-smartphone-android-box', [HomeController::class, 'operationGuideAndroid'])->name('operation-guide-android');
-Route::get('/operation-guide-android-tv-perfect-player', [HomeController::class, 'operationGuideAndroidTv'])->name('operation-guide-android-tv');
-Route::get('/operation-guide-apple-iphone-ipad-apple-tv', [HomeController::class, 'operationGuideApple'])->name('operation-guide-apple');
-Route::get('/operation-guide-enigma2-dreambox-vu', [HomeController::class, 'operationGuideEnigma'])->name('operation-guide-enigma');
-Route::get('/operation-guide-kodi-version-16-or-lower', [HomeController::class, 'operationGuideKodiOld'])->name('operation-guide-kodi-old');
-Route::get('/operation-guide-kodi-xbmc-version-17-et-plus', [HomeController::class, 'operationGuideKodiNew'])->name('operation-guide-kodi-new');
-Route::get('/operation-guide-mag-250-254-256', [HomeController::class, 'operationGuideMag'])->name('operation-guide-mag');
-Route::get('/operation-guide-pc-mac-logiciel-vlc', [HomeController::class, 'operationGuidePc'])->name('operation-guide-pc');
-Route::get('/operation-guide-smart-tv-samsung-lg', [HomeController::class, 'operationGuideSmartTv'])->name('operation-guide-smart-tv');
-Route::get('/operation-guide-stb-emulator', [HomeController::class, 'operationGuideStb'])->name('operation-guide-stb');
+Route::get('/operation-guide-android-smartphone-android-box', [HomeController::class, 'operationGuideAndroid'])->name('operation-guide-android')->middleware('seo');
+Route::get('/operation-guide-android-tv-perfect-player', [HomeController::class, 'operationGuideAndroidTv'])->name('operation-guide-android-tv')->middleware('seo');
+Route::get('/operation-guide-apple-iphone-ipad-apple-tv', [HomeController::class, 'operationGuideApple'])->name('operation-guide-apple')->middleware('seo');
+Route::get('/operation-guide-enigma2-dreambox-vu', [HomeController::class, 'operationGuideEnigma'])->name('operation-guide-enigma')->middleware('seo');
+Route::get('/operation-guide-kodi-version-16-or-lower', [HomeController::class, 'operationGuideKodiOld'])->name('operation-guide-kodi-old')->middleware('seo');
+Route::get('/operation-guide-kodi-xbmc-version-17-et-plus', [HomeController::class, 'operationGuideKodiNew'])->name('operation-guide-kodi-new')->middleware('seo');
+Route::get('/operation-guide-mag-250-254-256', [HomeController::class, 'operationGuideMag'])->name('operation-guide-mag')->middleware('seo');
+Route::get('/operation-guide-pc-mac-logiciel-vlc', [HomeController::class, 'operationGuidePc'])->name('operation-guide-pc')->middleware('seo');
+Route::get('/operation-guide-smart-tv-samsung-lg', [HomeController::class, 'operationGuideSmartTv'])->name('operation-guide-smart-tv')->middleware('seo');
+Route::get('/operation-guide-stb-emulator', [HomeController::class, 'operationGuideStb'])->name('operation-guide-stb')->middleware('seo');
 
 
 
@@ -85,7 +90,7 @@ Route::post('admin/login', [UserController::class, 'admin_login'])->name('admin.
 Route::name('admin.')->group(function () {
     Route::group(['prefix' => 'admin', 'middleware' => ['admin.check']], function () {
         Route::get('/', [AdminController::class, 'index'])->name('home');
-       
+
         // users  route
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::get('/password', [UserController::class, 'password'])->name('password');

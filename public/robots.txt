@@ -1,2 +1,27 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /forgot/
+
+# Allow important pages
+Allow: /about-us
+Allow: /contact-us
+Allow: /iptv-subscription
+Allow: /multi-connections
+Allow: /iptv-playlist
+Allow: /shipping-policy
+Allow: /privacy-policy
+Allow: /refund-policy
+Allow: /terms-of-service
+Allow: /faqs
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
