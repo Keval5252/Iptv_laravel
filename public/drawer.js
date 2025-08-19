@@ -1,69 +1,115 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Drawer functionality
-  const drawerOverlay = document.getElementById("drawer-overlay")
-  const drawer = document.getElementById("drawer")
-  const drawerOpenBtn = document.querySelector("[data-drawer-open]")
-  const drawerCloseBtn = document.querySelector("[data-drawer-close]")
+// Prevent multiple executions of this script
+if (window.drawerInitialized) {
+    console.log('Drawer already initialized, skipping...');
+} else {
+    window.drawerInitialized = true;
 
-  // Search drawer functionality
-  const searchDrawer = document.getElementById("search-drawer")
-  const searchOpenBtn = document.querySelector("[data-search-open]")
-  const searchCloseBtn = document.querySelector("[data-search-close]")
+    document.addEventListener("DOMContentLoaded", () => {
+        // Drawer functionality
+        const drawerOverlay = document.getElementById("drawer-overlay")
+        const drawer = document.getElementById("drawer")
+        const drawerOpenBtn = document.querySelector("[data-drawer-open]")
+        const drawerCloseBtn = document.querySelector("[data-drawer-close]")
 
-  // Cart sidebar functionality
-  const cartSidebar = document.getElementById("cart-sidebar")
-  const cartOpenBtn = document.querySelector("[data-cart-open]")
-  const cartCloseBtn = document.querySelector("[data-cart-close]")
+        // Search drawer functionality
+        const searchDrawer = document.getElementById("search-drawer")
+        const searchOpenBtn = document.querySelector("[data-search-open]")
+        const searchCloseBtn = document.querySelector("[data-search-close]")
 
-  // Open drawer
-  if (drawerOpenBtn) {
-    drawerOpenBtn.addEventListener("click", () => {
-      drawerOverlay.classList.remove("hidden")
-      drawer.classList.remove("-translate-x-full")
-    })
-  }
+        // Cart sidebar functionality
+        const cartSidebar = document.getElementById("cart-sidebar")
+        const cartOpenBtn = document.querySelector("[data-cart-open]")
+        const cartCloseBtn = document.querySelector("[data-cart-close]")
 
-  // Close drawer
-  if (drawerCloseBtn) {
-    drawerCloseBtn.addEventListener("click", () => {
-      drawerOverlay.classList.add("hidden")
-      drawer.classList.add("-translate-x-full")
-    })
-  }
+        // Remove existing event listeners to prevent duplicates
+        const removeExistingListeners = (element, eventType) => {
+            if (element && element._drawerListeners && element._drawerListeners[eventType]) {
+                element.removeEventListener(eventType, element._drawerListeners[eventType]);
+                delete element._drawerListeners[eventType];
+            }
+        };
 
-  // Close drawer when clicking overlay
-  if (drawerOverlay) {
-    drawerOverlay.addEventListener("click", () => {
-      drawerOverlay.classList.add("hidden")
-      drawer.classList.add("-translate-x-full")
-    })
-  }
+        // Add event listener with duplicate prevention
+        const addDrawerListener = (element, eventType, handler) => {
+            if (!element) return;
 
-  // Open search drawer
-  if (searchOpenBtn) {
-    searchOpenBtn.addEventListener("click", () => {
-      searchDrawer.classList.remove("-translate-y-full")
-    })
-  }
+            // Remove existing listener if any
+            removeExistingListeners(element, eventType);
 
-  // Close search drawer
-  if (searchCloseBtn) {
-    searchCloseBtn.addEventListener("click", () => {
-      searchDrawer.classList.add("-translate-y-full")
-    })
-  }
+            // Store reference to handler for potential removal
+            if (!element._drawerListeners) element._drawerListeners = {};
+            element._drawerListeners[eventType] = handler;
 
-  // Open cart sidebar
-  if (cartOpenBtn) {
-    cartOpenBtn.addEventListener("click", () => {
-      cartSidebar.classList.remove("translate-x-full")
-    })
-  }
+            // Add new listener
+            element.addEventListener(eventType, handler);
+        };
 
-  // Close cart sidebar
-  if (cartCloseBtn) {
-    cartCloseBtn.addEventListener("click", () => {
-      cartSidebar.classList.add("translate-x-full")
-    })
-  }
-})
+        // Open drawer
+        if (drawerOpenBtn) {
+            addDrawerListener(drawerOpenBtn, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (drawerOverlay) drawerOverlay.classList.remove("hidden");
+                if (drawer) drawer.classList.remove("-translate-x-full");
+            });
+        }
+
+        // Close drawer
+        if (drawerCloseBtn) {
+            addDrawerListener(drawerCloseBtn, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (drawerOverlay) drawerOverlay.classList.add("hidden");
+                if (drawer) drawer.classList.add("-translate-x-full");
+            });
+        }
+
+        // Close drawer when clicking overlay
+        if (drawerOverlay) {
+            addDrawerListener(drawerOverlay, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                drawerOverlay.classList.add("hidden");
+                if (drawer) drawer.classList.add("-translate-x-full");
+            });
+        }
+
+        // Open search drawer
+        if (searchOpenBtn) {
+            addDrawerListener(searchOpenBtn, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (searchDrawer) searchDrawer.classList.remove("-translate-y-full");
+            });
+        }
+
+        // Close search drawer
+        if (searchCloseBtn) {
+            addDrawerListener(searchCloseBtn, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (searchDrawer) searchDrawer.classList.add("-translate-y-full");
+            });
+        }
+
+        // Open cart sidebar
+        if (cartOpenBtn) {
+            addDrawerListener(cartOpenBtn, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (cartSidebar) cartSidebar.classList.remove("translate-x-full");
+            });
+        }
+
+        // Close cart sidebar
+        if (cartCloseBtn) {
+            addDrawerListener(cartCloseBtn, "click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (cartSidebar) cartSidebar.classList.add("translate-x-full");
+            });
+        }
+
+        console.log('Drawer functionality initialized successfully');
+    });
+}
