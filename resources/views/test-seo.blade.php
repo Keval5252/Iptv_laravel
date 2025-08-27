@@ -55,20 +55,20 @@
                             <h3>Meta Tags</h3>
                             <ul>
                                 <li>Title: {{ config('app.name') }}</li>
-                                <li>Description: Set via @section</li>
-                                <li>Keywords: Set via @section</li>
-                                <li>Author: Set via @section</li>
-                                <li>Robots: Set via @section</li>
+                                <li>Description: Set via @@section</li>
+                                <li>Keywords: Set via @@section</li>
+                                <li>Author: Set via @@section</li>
+                                <li>Robots: Set via @@section</li>
                             </ul>
                         </div>
 
                         <div class="col-md-6">
                             <h3>Open Graph</h3>
                             <ul>
-                                <li>OG Title: Set via @section</li>
-                                <li>OG Description: Set via @section</li>
-                                <li>OG Type: Set via @section</li>
-                                <li>OG Image: Set via @section</li>
+                                <li>OG Title: Set via @@section</li>
+                                <li>OG Description: Set via @@section</li>
+                                <li>OG Type: Set via @@section</li>
+                                <li>OG Image: Set via @@section</li>
                             </ul>
                         </div>
                     </div>
@@ -77,10 +77,10 @@
                         <div class="col-md-6">
                             <h3>Twitter Cards</h3>
                             <ul>
-                                <li>Card Type: Set via @section</li>
-                                <li>Title: Set via @section</li>
-                                <li>Description: Set via @section</li>
-                                <li>Image: Set via @section</li>
+                                <li>Card Type: Set via @@section</li>
+                                <li>Title: Set via @@section</li>
+                                <li>Description: Set via @@section</li>
+                                <li>Image: Set via @@section</li>
                             </ul>
                         </div>
 
@@ -99,7 +99,7 @@
                         <div class="col-md-12">
                             <h3>Additional SEO Features</h3>
                             <ul>
-                                <li>Canonical URL: Set via @section</li>
+                                <li>Canonical URL: Set via @@section</li>
                                 <li>Robots.txt: Created in public/robots.txt</li>
                                 <li>XML Sitemap: Available at /sitemap.xml</li>
                                 <li>SEO Middleware: Applied to all routes</li>

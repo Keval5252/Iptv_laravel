@@ -1,140 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     <url>
-        <loc>http://localhost:8000</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/about-us</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/about-us</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/contact-us</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/contact-us</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/iptv-subscription</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/iptv-subscription</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/multi-connections</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/multi-connections</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/iptv-playlist</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/iptv-playlist</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/adult-channel</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/adult-channel</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/best-iptv-for-firestick-2022</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/best-iptv-for-firestick-2022</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/shipping-policy</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/shipping-policy</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/privacy-policy</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/privacy-policy</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/refund-policy</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/refund-policy</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/terms-of-service</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/terms-of-service</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
             </url>
     <url>
-        <loc>http://localhost:8000/faqs</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-android-smartphone-android-box</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-android-tv-perfect-player</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-apple-iphone-ipad-apple-tv</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-enigma2-dreambox-vu</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-kodi-version-16-or-lower</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-kodi-xbmc-version-17-et-plus</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-mag-250-254-256</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-pc-mac-logiciel-vlc</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-smart-tv-samsung-lg</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-            </url>
-    <url>
-        <loc>http://localhost:8000/operation-guide-stb-emulator</loc>
-        <lastmod>2025-08-18T00:00:00+00:00</lastmod>
+        <loc>http://127.0.0.1:8000/faqs</loc>
+        <lastmod>2025-08-26T00:00:00+00:00</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
             </url>
