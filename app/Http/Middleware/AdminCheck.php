@@ -20,17 +20,23 @@ class AdminCheck
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
-        if (!$user) {
-            return redirect("/login");
+        // Check if user is authenticated using admin guard
+        if (!Auth::guard('admin')->check()) {
+            return redirect("/admin/login");
         }
+        
+    $user = Auth::guard('admin')->user();
+    // Make the 'admin' guard the default for the current request so
+    // calls to Auth::user() or auth()->user() resolve to the admin user.
+    Auth::shouldUse('admin');
         if ($user) {
-            if ($user->hasRole('admin')) {
-                $user->tokens()->delete();
-                return redirect("/");
-                // abort(401, "You don't have permission to access this area");
+            // Check if user is admin (user_type = 1)
+            if ($user->user_type != 1) {
+                Auth::guard('admin')->logout();
+                return redirect("/admin/login")->withErrors(['email' => 'Access denied. Admin privileges required.']);
             }
         }
+        
         return $next($request);
     }
 }

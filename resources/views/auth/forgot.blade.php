@@ -21,7 +21,7 @@
         </form>
         
         <div class="blankpage-footer text-center">
-            <a href="{{ route('login') }}"><strong>Login</strong></a>
+                            <a href="{{ route('user.login') }}"><strong>Login</strong></a>
         </div>
     </div>
     

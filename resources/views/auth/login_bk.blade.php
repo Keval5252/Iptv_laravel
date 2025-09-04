@@ -35,7 +35,7 @@
                                 <span class="text-danger">{{ $errors->first('email') }}</span>
                             @endif
                             <div class="card p-4 rounded-plus bg-faded">
-                                <form id="js-login" method="POST" action="{{ route('login') }}">
+                                <form id="js-login" method="POST" action="{{ route('user.login') }}">
                                     @csrf
                                     <div class="form-group">
                                         <label class="form-label" for="username">Email</label>

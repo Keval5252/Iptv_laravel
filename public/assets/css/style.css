@@ -1074,3 +1074,247 @@ section {
     padding: 5px 0;
   }
 }
+
+/* Hide scrollbar for navigation menu */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+
+/* Additional navigation improvements */
+.nav-flex-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.nav-flex-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure smooth scrolling for navigation */
+.nav-flex-container {
+  scroll-behavior: smooth;
+}
+
+
+/* Navigation menu improvements */
+nav ul {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+nav ul::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Ensure navigation items don't wrap and scroll smoothly */
+.nav-flex-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-flex-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scrolling for navigation */
+.nav-flex-container {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+}
+
+
+/* Specific fix for header navigation scrollbar */
+header nav ul.flex {
+}
+
+header nav ul.flex::-webkit-scrollbar {
+}
+
+/* Ensure the navigation container handles overflow properly */
+header .container {
+  overflow: visible;
+}
+
+/* Make sure navigation items are properly spaced */
+header nav ul li {
+  flex-shrink: 0;
+}
+
+/* Specific fix for header navigation scrollbar */
+header nav ul.flex {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+header nav ul.flex::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure the navigation container handles overflow properly */
+header .container {
+  overflow: visible;
+}
+
+/* Make sure navigation items are properly spaced */
+header nav ul li {
+  flex-shrink: 0;
+}
+
+
+/* Final scrollbar hiding solution */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Specific navigation scrollbar fix */
+nav ul, .nav-flex-container, .hide-scrollbar {
+}
+
+nav ul::-webkit-scrollbar, 
+.nav-flex-container::-webkit-scrollbar, 
+.hide-scrollbar::-webkit-scrollbar {
+}
+
+/* Final scrollbar hiding solution */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Specific navigation scrollbar fix */
+nav ul, .nav-flex-container, .hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+nav ul::-webkit-scrollbar, 
+.nav-flex-container::-webkit-scrollbar, 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Navigation improvements - no scrollbar */
+header nav ul {
+  overflow: hidden !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 1rem !important;
+}
+
+/* Ensure navigation items fit properly */
+header nav ul li {
+  flex-shrink: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* Responsive navigation */
+@media (max-width: 1024px) {
+  header nav ul {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 768px) {
+  header nav ul {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Additional navigation fixes */
+header .container {
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+header nav {
+  overflow: visible !important;
+}
+
+/* Ensure no scrollbars anywhere in header */
+header * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+header *::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Make navigation items responsive */
+@media (max-width: 1200px) {
+  header nav ul {
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  header nav ul {
+    gap: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Header navigation scrollbar fix */
+header nav ul {
+  overflow: visible !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+header nav ul::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Ensure navigation items wrap properly */
+header nav ul li {
+  flex-shrink: 0;
+  margin: 0 0.25rem;
+}
+
+/* Remove any horizontal scrolling */
+header .container {
+  overflow: visible;
+}
+
+/* Ensure proper spacing for navigation */
+header nav {
+  overflow: visible;
+}
+
+/* Additional scrollbar hiding for all elements */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}

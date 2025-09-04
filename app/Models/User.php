@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
-use App\Models\Follower;
 use Auth;
 
 
@@ -23,10 +22,28 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'name',
+        'user_name',
+        'user_type',
         'email',
         'password',
         'first_name',
-        'last_name'
+        'last_name',
+        'gender',
+        'dob',
+        'country_id',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
+        'photo',
+        'is_notification',
+        'status',
+        'device_type',
+        'device_token',
+        'stripe_customer_id'
     ];
 
     /**
@@ -48,14 +65,31 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function following()
+    public function subscriptions()
     {
-        return $this->hasMany(Follower::class, 'follow_by');
+        return $this->hasMany(UserSubscription::class);
     }
 
-    public function follower()
+    public function activeSubscription()
     {
-        return $this->hasMany(Follower::class, 'follow_to');
+        return $this->hasOne(UserSubscription::class)->where('status', 'active');
+    }
+
+    public function stripePayments()
+    {
+        return $this->hasMany(StripePayment::class);
+    }
+
+    public function hasActiveSubscription()
+    {
+        return $this->activeSubscription()->exists();
+    }
+
+
+
+    public function getFullNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
     }
     
 

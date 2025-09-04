@@ -32,6 +32,16 @@ class SubscriptionPlan extends Model
         'display_pages' => 'array'
     ];
 
+    public function userSubscriptions()
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    public function stripePayments()
+    {
+        return $this->hasMany(StripePayment::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

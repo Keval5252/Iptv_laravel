@@ -202,14 +202,17 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()->first()]);
         }
+        
         $user = User::where('email', $request->email)->first();
         if ($user) {
-            // if ($user->roles[0]->name != 'Admin' && $user->roles[0]->name != 'Developer') {
+            // Check if user is admin (user_type = 1)
             if($user->user_type != 1){   
-                return response()->json(['status' => 'error', 'message' => 'Enter valid email or password!']);
+                return response()->json(['status' => 'error', 'message' => 'This login is for administrators only. Regular users should use the user login.']);
             }
+            
             $credentials = $request->only('email', 'password');
-            if (Auth::attempt($credentials)) {
+            // Use admin guard specifically for admin authentication
+            if (Auth::guard('admin')->attempt($credentials)) {
                 return response()->json(['status' => 'success']);
             }
         }
