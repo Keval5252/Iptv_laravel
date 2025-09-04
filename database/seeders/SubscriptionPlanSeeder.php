@@ -39,8 +39,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'is_popular' => false,
                 'is_active' => true,
-                'sort_order' => 0,
-                'buy_link' => '#'
+                'sort_order' => 0
             ],
             [
                 'name' => 'XXX-1 Year',
@@ -67,8 +66,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'is_popular' => true,
                 'is_active' => true,
-                'sort_order' => 1,
-                'buy_link' => '#'
+                'sort_order' => 1
             ],
             [
                 'name' => 'XXX-6 Month',
@@ -96,7 +94,6 @@ class SubscriptionPlanSeeder extends Seeder
                 'is_popular' => false,
                 'is_active' => true,
                 'sort_order' => 2,
-                'buy_link' => '#'
             ],
             [
                 'name' => 'XXX-3 Month',
@@ -124,7 +121,6 @@ class SubscriptionPlanSeeder extends Seeder
                 'is_popular' => false,
                 'is_active' => true,
                 'sort_order' => 3,
-                'buy_link' => '#'
             ],
             [
                 'name' => 'Standard-1 Month',
@@ -151,7 +147,6 @@ class SubscriptionPlanSeeder extends Seeder
                 'is_popular' => false,
                 'is_active' => true,
                 'sort_order' => 4,
-                'buy_link' => '#'
             ],
             [
                 'name' => 'Standard-3 Month',
@@ -178,7 +173,6 @@ class SubscriptionPlanSeeder extends Seeder
                 'is_popular' => false,
                 'is_active' => true,
                 'sort_order' => 5,
-                'buy_link' => '#'
             ],
             [
                 'name' => 'XXX-1 Month',
@@ -206,7 +200,6 @@ class SubscriptionPlanSeeder extends Seeder
                 'is_popular' => false,
                 'is_active' => true,
                 'sort_order' => 6,
-                'buy_link' => '#'
             ]
         ];
 

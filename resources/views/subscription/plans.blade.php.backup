@@ -496,13 +496,9 @@ body {
                                     <button class="plan-button" disabled>
                                         <i class="fas fa-check me-2"></i>Current Plan
                                     </button>
-                                @elseif(Auth::check())
-                                    <a href="{{ route('subscription.purchase', $plan->id) }}" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}">
-                                        <i class="fas fa-rocket me-2"></i>Subscribe Now
-                                    </a>
                                 @else
-                                    <a href="{{ route('user.login') }}" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}">
-                                        <i class="fas fa-sign-in-alt me-2"></i>Login to Subscribe
+                                    <a href="{{ route('subscription.purchase', $plan->id) }}" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}">
+                                        <i class="fas fa-rocket me-2"></i>Get Started
                                     </a>
                                 @endif
                             </div>
@@ -537,15 +533,9 @@ body {
                             </ul>
 
                             <div class="mt-auto">
-                                @if(Auth::check())
-                                    <a href="#" class="plan-button {{ $plan['featured'] ? 'featured' : '' }}">
-                                        <i class="fas fa-rocket me-2"></i>Subscribe Now
-                                    </a>
-                                @else
-                                    <a href="{{ route('user.login') }}" class="plan-button {{ $plan['featured'] ? 'featured' : '' }}">
-                                        <i class="fas fa-sign-in-alt me-2"></i>Login to Subscribe
-                                    </a>
-                                @endif
+                                <a href="#" class="plan-button {{ $plan['featured'] ? 'featured' : '' }}">
+                                    <i class="fas fa-rocket me-2"></i>Get Started
+                                </a>
                             </div>
                         </div>
                     </div>

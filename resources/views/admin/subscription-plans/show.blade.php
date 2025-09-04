@@ -70,12 +70,6 @@
                                     <th>Sort Order:</th>
                                     <td>{{ $subscriptionPlan->sort_order }}</td>
                                 </tr>
-                                @if($subscriptionPlan->buy_link)
-                                <tr>
-                                    <th>Buy Link:</th>
-                                    <td>
-                                        <a href="{{ $subscriptionPlan->buy_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-external-link-alt"></i> View Link
                                         </a>
                                     </td>
                                 </tr>
@@ -131,8 +125,6 @@
                                                         @endif
                                                     </ul>
                                                 @endif
-                                                <button class="btn btn-primary mt-3">Buy Now</button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

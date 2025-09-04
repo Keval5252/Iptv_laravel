@@ -19,7 +19,7 @@ class SubscriptionPlan extends Model
         'is_popular',
         'is_active',
         'sort_order',
-        'buy_link',
+        
         'display_pages'
     ];
 

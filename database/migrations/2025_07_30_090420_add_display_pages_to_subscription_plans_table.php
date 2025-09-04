@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('subscription_plans', function (Blueprint $table) {
-            $table->json('display_pages')->nullable()->after('buy_link');
+            $table->json('display_pages')->nullable();
         });
     }
 

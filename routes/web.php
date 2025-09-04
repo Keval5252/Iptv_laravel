@@ -57,7 +57,6 @@ Route::get('/operation-guide-pc-mac-logiciel-vlc', [HomeController::class, 'oper
 Route::get('/operation-guide-smart-tv-samsung-lg', [HomeController::class, 'operationGuideSmartTv'])->name('operation-guide-smart-tv')->middleware('seo');
 Route::get('/operation-guide-stb-emulator', [HomeController::class, 'operationGuideStb'])->name('operation-guide-stb')->middleware('seo');
 
-
 // Smart Home redirect based on authentication status
 Route::get('/user-home', function () {
     if (!Auth::check()) {
@@ -79,9 +78,11 @@ Route::get('/user/register', [UserAuthController::class, 'showRegistrationForm']
 Route::post('/user/register', [UserAuthController::class, 'register'])->name('user.register.submit');
 Route::post('/user/logout', [UserAuthController::class, 'logout'])->name('user.logout');
 
-// Subscription Routes
+// Subscription Routes - Public access to plans
+Route::get('/subscription-plans', [SubscriptionController::class, 'index'])->name('subscription.plans');
+
+// Subscription Routes - Authenticated only
 Route::middleware(['auth', 'user.only'])->group(function () {
-    Route::get('/subscription-plans', [SubscriptionController::class, 'index'])->name('subscription.plans');
     Route::get('/subscription-plans/{id}', [SubscriptionController::class, 'show'])->name('subscription.show');
     Route::get('/subscription-plans/{id}/purchase', [SubscriptionController::class, 'purchase'])->name('subscription.purchase');
     Route::get('/dashboard', [SubscriptionController::class, 'dashboard'])->name('subscription.dashboard');
@@ -102,8 +103,6 @@ Route::get('/token/{id}', [HomeController::class, 'accessToken'])->name('authtok
 Route::get('/login', function () {
     return redirect("/user/login");
 });
-
-
 
 Route::get('/home', function () {
     return redirect("/");

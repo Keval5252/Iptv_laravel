@@ -50,9 +50,9 @@
                                     <li>• 2024 Best IPTV Service</li>
                                 </ul>
                             @endif
-                            <a href="{{ $plan->buy_link ?? '#' }}"
+                            <a href="{{ route('user.login') }}"
                                 class="bg-amber-500 text-white font-medium px-8 py-3 rounded hover:bg-amber-600 transition">
-                                Buy Now
+                                Login to Subscribe
                             </a>
                         </div>
                     @endforeach

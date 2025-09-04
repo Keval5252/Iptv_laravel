@@ -11,20 +11,14 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index']);
+        $this->middleware('auth');
     }
 
     public function index()
     {
         $plans = SubscriptionPlan::active()->ordered()->get();
-        
-        if (Auth::check()) {
-            $user = Auth::user();
-            $activeSubscription = $user->activeSubscription;
-        } else {
-            $user = null;
-            $activeSubscription = null;
-        }
+        $user = Auth::user();
+        $activeSubscription = $user->activeSubscription;
         
         return view('subscription.plans', compact('plans', 'activeSubscription'));
     }

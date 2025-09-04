@@ -43,7 +43,7 @@ class SubscriptionPlanController extends Controller
             'is_popular' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
-            'buy_link' => 'nullable|url'
+            
         ]);
 
         if ($validator->fails()) {
@@ -95,7 +95,7 @@ class SubscriptionPlanController extends Controller
             'is_popular' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
-            'buy_link' => 'nullable|url'
+            
         ]);
 
         if ($validator->fails()) {
