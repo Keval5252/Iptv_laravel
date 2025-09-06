@@ -149,7 +149,7 @@ Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 // Stripe Subscription Routes
 Route::middleware(['auth', 'user.only'])->group(function () {
     Route::post('/subscription/{plan}/create-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'createSubscription'])->name('subscription.create-stripe');
-    Route::post('/subscription/confirm-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'confirmSubscription'])->name('subscription.confirm-stripe');
+    Route::get('/subscription/confirm-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'confirmSubscription'])->name('subscription.confirm-stripe');
     Route::post('/subscription/cancel-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel-stripe');
 });
 

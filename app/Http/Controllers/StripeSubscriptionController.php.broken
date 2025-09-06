@@ -84,7 +84,7 @@ class StripeSubscriptionController extends Controller
                 'client_secret' => $subscriptionData['client_secret'],
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Stripe subscription creation failed: ' . $e->getMessage(), [
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
@@ -116,9 +116,8 @@ class StripeSubscriptionController extends Controller
             'metadata[user_id]' => $user->id,
             'metadata[plan_id]' => $plan->id,
             'metadata[plan_name]' => $plan->name,
-        ]);
         
-        $ch = curl_init();
+        ]);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -126,7 +125,6 @@ class StripeSubscriptionController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/x-www-form-urlencoded',
-        ]);
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -150,83 +148,58 @@ class StripeSubscriptionController extends Controller
         }
 
         Log::info("Stripe subscription created successfully via direct API call", [
-            'subscription_id' => $responseData['id'],
+            'subscription_id' => $responseData['id']);
             'customer_id' => $customerId,
             'plan_id' => $plan->id,
             'http_code' => $httpCode,
-        ]);
 
         return [
-            'subscription_id' => $responseData['id'],
-            'client_secret' => $responseData['latest_invoice']['payment_intent']['client_secret'],
-            'payment_intent_id' => $responseData['latest_invoice']['payment_intent']['id'],
+            'subscription_id' => $responseData['id']);
+            'client_secret'
+            ]);
+            'payment_intent_id' => $responseData['latest_invoice']['payment_intent']['id']);
         ];
     }
 
     /**
-     * Handle successful subscription payment
-     */
+    /**
     public function confirmSubscription(Request $request)
     {
+        $request->validate([
+            'subscription_id' => 'required|string',
+        ]);
+
         try {
-            // Get subscription_id from query parameter
-            $subscriptionId = $request->query('subscription_id');
-            
-            if (!$subscriptionId) {
-                return redirect()->route('subscription.plans')
-                    ->with('error', 'No subscription ID provided.');
-            }
-
-            // Get the user
-            $user = Auth::user();
-            
-            // Find the user subscription by plan ID (since we're passing plan ID as subscription_id)
-            $userSubscription = UserSubscription::where('user_id', $user->id)
-                ->where('subscription_plan_id', $subscriptionId)
-                ->where('status', 'pending')
-                ->first();
-            
-            if (!$userSubscription) {
-                return redirect()->route('subscription.plans')
-                    ->with('error', 'No pending subscription found.');
-            }
-
-            // Retrieve the Stripe subscription
-            $stripeSubscription = Subscription::retrieve($userSubscription->stripe_subscription_id);
+            $subscription = Subscription::retrieve($request->subscription_id);
             
             Log::info('Subscription confirmation check', [
-                'subscription_id' => $stripeSubscription->id,
-                'status' => $stripeSubscription->status,
-                'latest_invoice_status' => $stripeSubscription->latest_invoice->status ?? 'unknown'
+                'subscription_id' => $subscription->id,
+                'status' => $subscription->status,
+                'latest_invoice_status' => $subscription->latest_invoice->status ?? 'unknown'
             ]);
             
-            if ($stripeSubscription->status === 'active') {
+            if ($subscription->status === 'active') {
                 // Update local subscription
-                $userSubscription->update([
-                    'status' => 'active',
-                    'stripe_subscription_id' => $stripeSubscription->id,
-                ]);
+                $userSubscription = UserSubscription::where('stripe_subscription_id', $subscription->id)->first();
+                
+                if ($userSubscription) {
+                    $userSubscription->update([
+                        'status' => 'active',
+                        'stripe_subscription_id' => $subscription->id,
+                    ]);
+                }
 
                 return redirect()->route('subscription.dashboard')
                     ->with('success', 'Your subscription has been activated successfully!');
             } else {
-                // Update status based on Stripe status
-                $userSubscription->update([
-                    'status' => $stripeSubscription->status,
-                ]);
-                
                 return redirect()->route('subscription.plans')
-                    ->with('error', 'Subscription payment was not successful. Status: ' . $stripeSubscription->status);
+                    ->with('error', 'Subscription payment was not successful. Status: ' . $subscription->status);
             }
 
         } catch (ApiErrorException $e) {
             Log::error('Stripe subscription confirmation failed: ' . $e->getMessage());
             return redirect()->route('subscription.plans')
-                ->with('error', 'Failed to confirm subscription: ' . $e->getMessage());
-        } catch (\Exception $e) {
-            Log::error('Subscription confirmation error: ' . $e->getMessage());
-            return redirect()->route('subscription.plans')
-                ->with('error', 'An error occurred while confirming your subscription.');
+                ->with('error', 'Failed to confirm subscription.');
         }
     }
 
@@ -238,21 +211,24 @@ class StripeSubscriptionController extends Controller
         $user = Auth::user();
         $subscription = $user->activeSubscription;
         
-        if (!$subscription) {
+        if (!$subscription || !$subscription->stripe_subscription_id) {
             return redirect()->route('subscription.dashboard')
                 ->with('error', 'No active subscription found.');
         }
 
         try {
-            $stripeSubscription = Subscription::retrieve($subscription->stripe_subscription_id);
-            $stripeSubscription->cancel();
-            
-            $subscription->update(['status' => 'cancelled']);
-            
+            // Cancel in Stripe using direct API call
+            $this->cancelStripeSubscriptionDirectly($subscription->stripe_subscription_id);
+
+            // Update local subscription
+            $subscription->update([
+                'status' => 'cancelled',
+                'end_date' => now(),
+
             return redirect()->route('subscription.dashboard')
                 ->with('success', 'Your subscription has been cancelled successfully.');
-                
-        } catch (ApiErrorException $e) {
+
+        } catch (\Exception $e) {
             Log::error('Stripe subscription cancellation failed: ' . $e->getMessage());
             return redirect()->route('subscription.dashboard')
                 ->with('error', 'Failed to cancel subscription.');
@@ -260,27 +236,55 @@ class StripeSubscriptionController extends Controller
     }
 
     /**
-     * Calculate subscription end date based on plan duration
+     * Cancel Stripe subscription using direct API call
      */
-    private function calculateEndDate(SubscriptionPlan $plan): \Carbon\Carbon
+    private function cancelStripeSubscriptionDirectly(string $subscriptionId): void
     {
-        $duration = $plan->duration;
-        
-        if (strpos($duration, 'Year') !== false) {
-            $years = (int) $duration;
-            return now()->addYears($years);
-        } elseif (strpos($duration, 'Month') !== false) {
-            $months = (int) $duration;
-            return now()->addMonths($months);
-        } elseif (strpos($duration, 'Week') !== false) {
-            $weeks = (int) $duration;
-            return now()->addWeeks($weeks);
-        } elseif (strpos($duration, 'Day') !== false) {
-            $days = (int) $duration;
-            return now()->addDays($days);
+        $stripeSecret = config('services.stripe.secret');
+        if (!$stripeSecret) {
+            throw new \Exception('Stripe secret key not configured');
         }
+
+        $url = "https://api.stripe.com/v1/subscriptions/{$subscriptionId}";
         
-        // Default to 1 month if duration format is not recognized
-        return now()->addMonth();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_USERPWD, $stripeSecret . ':');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error) {
+            throw new \Exception("cURL error: {$error}");
+        }
+
+        if ($httpCode >= 400) {
+            $responseData = json_decode($response, true);
+            $errorMessage = $responseData['error']['message'] ?? 'Unknown error';
+            throw new \Exception("Stripe API error ({$httpCode}): {$errorMessage}");
+        }
+
+        Log::info("Stripe subscription cancelled successfully via direct API call", [
+            'subscription_id' => $subscriptionId,
+            'http_code' => $httpCode,
+    }
+
+    /**
+     * Calculate subscription end date based on plan type
+     */
+    private function calculateEndDate(SubscriptionPlan $plan)
+    {
+        return match($plan->type) {
+            'monthly' => now()->addMonth(),
+            'yearly' => now()->addYear(),
+            'lifetime' => now()->addYears(100), // Effectively lifetime
+            default => now()->addMonth(),
+        };
     }
 }

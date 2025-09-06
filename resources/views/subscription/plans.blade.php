@@ -16,6 +16,111 @@
 }
 
 body {
+
+/* Payment Modal Styles */
+.payment-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.payment-modal-content {
+    background: var(--dark-card);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.payment-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-modal-header h3 {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.close-payment-modal {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-payment-modal:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+}
+
+.payment-modal-body {
+    padding: 24px;
+}
+
+#payment-element {
+    margin-bottom: 20px;
+}
+
+.payment-modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.payment-modal-footer .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.payment-modal-footer .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
+
+.payment-modal-footer .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-light);
+}
+
+.payment-modal-footer .btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+}
+
+.payment-modal-footer .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
     background: var(--dark-bg);
     color: var(--text-light);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -492,9 +597,13 @@ body {
                             </ul>
 
                             <div class="mt-auto">
-                                @if(isset($activeSubscription) && $activeSubscription)
+                                @if(isset($activeSubscription) && $activeSubscription && $activeSubscription->subscription_plan_id == $plan->id)
                                     <button class="plan-button" disabled>
                                         <i class="fas fa-check me-2"></i>Current Plan
+                                    </button>
+                                @elseif(isset($activeSubscription) && $activeSubscription)
+                                    <button class="plan-button" disabled>
+                                        <i class="fas fa-lock me-2"></i>Upgrade Available
                                     </button>
                                 @elseif(Auth::check())
                                     <button onclick="createStripeSubscription({{ $plan->id }})" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}" id="subscribe-btn-{{ $plan->id }}">
@@ -555,6 +664,28 @@ body {
     </div>
 </div>
 
+<!-- Payment Modal -->
+<div id="payment-modal" class="payment-modal" style="display: none;">
+    <div class="payment-modal-content">
+        <div class="payment-modal-header">
+            <h3>Complete Your Subscription</h3>
+            <button type="button" class="close-payment-modal" onclick="closePaymentModal()">&times;</button>
+        </div>
+        <div class="payment-modal-body">
+            <form id="payment-form">
+                <div id="payment-element">
+                    <!-- Stripe Elements will be inserted here -->
+                </div>
+                <div class="payment-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
+                    <button type="submit" id="submit-payment" class="btn btn-primary">
+                        <i class="fas fa-credit-card me-2"></i>Complete Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <!-- Features Section -->
 <section class="features-section">
     <div class="container">
@@ -612,8 +743,12 @@ body {
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 const stripe = Stripe('{{ config('services.stripe.key') }}');
+let elements = null;
+let paymentElement = null;
 
-async function createStripeSubscription(planId) {
+// Global function for subscription creation
+window.createStripeSubscription = async function(planId) {
+    console.log('Creating subscription for plan:', planId);
     const button = document.getElementById(`subscribe-btn-${planId}`);
     const originalText = button.innerHTML;
     
@@ -622,6 +757,7 @@ async function createStripeSubscription(planId) {
     button.disabled = true;
     
     try {
+        console.log('Fetching subscription data...');
         const response = await fetch(`/subscription/${planId}/create-stripe-subscription`, {
             method: 'POST',
             headers: {
@@ -630,21 +766,22 @@ async function createStripeSubscription(planId) {
             }
         });
         
+        console.log('Response status:', response.status);
         const data = await response.json();
+        console.log('Response data:', data);
         
         if (data.error) {
             throw new Error(data.error);
         }
         
-        // Confirm the subscription with Stripe
-        const { error } = await stripe.confirmCardPayment(data.client_secret);
+        // Show payment modal
+        showPaymentModal();
         
-        if (error) {
-            throw new Error(error.message);
-        }
+        // Initialize Stripe Elements
+        await initializeElements(data.client_secret);
         
-        // Redirect to success page
-        window.location.href = '/subscription/confirm-stripe-subscription';
+        // Store plan ID for later use
+        window.currentPlanId = planId;
         
     } catch (error) {
         console.error('Error:', error);
@@ -654,6 +791,104 @@ async function createStripeSubscription(planId) {
         button.innerHTML = originalText;
         button.disabled = false;
     }
+};
+
+async function initializeElements(clientSecret) {
+    console.log('Initializing Stripe Elements with client secret:', clientSecret);
+    
+    if (!elements) {
+        elements = stripe.elements({
+            clientSecret: clientSecret,
+            appearance: {
+                theme: 'dark',
+                variables: {
+                    colorPrimary: '#667eea',
+                    colorBackground: '#1a202c',
+                    colorText: '#e2e8f0',
+                    colorDanger: '#df1b41',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    spacingUnit: '4px',
+                    borderRadius: '8px',
+                }
+            }
+        });
+    }
+    
+    if (!paymentElement) {
+        paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+    }
 }
+
+function showPaymentModal() {
+    console.log('Showing payment modal');
+    document.getElementById('payment-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closePaymentModal() {
+    console.log('Closing payment modal');
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Clean up elements
+    if (paymentElement) {
+        paymentElement.unmount();
+        paymentElement = null;
+    }
+    if (elements) {
+        elements = null;
+    }
+}
+
+async function setupPaymentForm() {
+    const form = document.getElementById('payment-form');
+    
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        console.log('Payment form submitted');
+        
+        const submitButton = document.getElementById('submit-payment');
+        const originalText = submitButton.innerHTML;
+        
+        // Show loading state
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        submitButton.disabled = true;
+        
+        try {
+            console.log('Confirming payment with Stripe...');
+            // Submit the payment
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + '/subscription/confirm-stripe-subscription?subscription_id=' + window.currentPlanId,
+                },
+            });
+            
+            if (error) {
+                console.error('Stripe payment error:', error);
+                throw new Error(error.message);
+            }
+            
+            console.log('Payment confirmed successfully');
+            // If we get here, the payment was successful
+            // The page will redirect to the return_url
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Payment failed: ' + error.message);
+            
+            // Reset button
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }
+    });
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, setting up payment form');
+    setupPaymentForm();
+});
 </script>
 @endsection
