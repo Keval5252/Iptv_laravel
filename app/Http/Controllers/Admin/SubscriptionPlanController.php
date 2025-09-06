@@ -4,11 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubscriptionPlan;
+use App\Services\StripePlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionPlanController extends Controller
 {
+    protected $stripePlanService;
+
+    public function __construct(StripePlanService $stripePlanService)
+    {
+        $this->stripePlanService = $stripePlanService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -43,7 +52,6 @@ class SubscriptionPlanController extends Controller
             'is_popular' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
-            
         ]);
 
         if ($validator->fails()) {
@@ -56,7 +64,30 @@ class SubscriptionPlanController extends Controller
         $data['is_popular'] = $request->has('is_popular');
         $data['is_active'] = $request->has('is_active');
 
-        SubscriptionPlan::create($data);
+        // Create the subscription plan first
+        $subscriptionPlan = SubscriptionPlan::create($data);
+
+        // Create Stripe plan
+        if ($subscriptionPlan->is_active) {
+            $stripeResult = $this->stripePlanService->createStripePlan($subscriptionPlan);
+            
+            if ($stripeResult['success']) {
+                $subscriptionPlan->update([
+                    'stripe_product_id' => $stripeResult['product_id'],
+                    'stripe_plan_id' => $stripeResult['price_id'],
+                ]);
+                
+                return redirect()->route('admin.subscription-plans.index')
+                    ->with('success', 'Subscription plan created successfully with Stripe integration.');
+            } else {
+                Log::error('Stripe plan creation failed for plan: ' . $subscriptionPlan->id, [
+                    'error' => $stripeResult['error']
+                ]);
+                
+                return redirect()->route('admin.subscription-plans.index')
+                    ->with('warning', 'Subscription plan created but Stripe integration failed. Please check logs and update manually.');
+            }
+        }
 
         return redirect()->route('admin.subscription-plans.index')
             ->with('success', 'Subscription plan created successfully.');
@@ -95,7 +126,6 @@ class SubscriptionPlanController extends Controller
             'is_popular' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
-            
         ]);
 
         if ($validator->fails()) {
@@ -108,7 +138,30 @@ class SubscriptionPlanController extends Controller
         $data['is_popular'] = $request->has('is_popular');
         $data['is_active'] = $request->has('is_active');
 
+        // Update the subscription plan
         $subscriptionPlan->update($data);
+
+        // Update Stripe plan if plan is active
+        if ($subscriptionPlan->is_active) {
+            $stripeResult = $this->stripePlanService->updateStripePlan($subscriptionPlan);
+            
+            if ($stripeResult['success']) {
+                $subscriptionPlan->update([
+                    'stripe_product_id' => $stripeResult['product_id'],
+                    'stripe_plan_id' => $stripeResult['price_id'],
+                ]);
+                
+                return redirect()->route('admin.subscription-plans.index')
+                    ->with('success', 'Subscription plan updated successfully with Stripe integration.');
+            } else {
+                Log::error('Stripe plan update failed for plan: ' . $subscriptionPlan->id, [
+                    'error' => $stripeResult['error']
+                ]);
+                
+                return redirect()->route('admin.subscription-plans.index')
+                    ->with('warning', 'Subscription plan updated but Stripe integration failed. Please check logs and update manually.');
+            }
+        }
 
         return redirect()->route('admin.subscription-plans.index')
             ->with('success', 'Subscription plan updated successfully.');
@@ -119,10 +172,50 @@ class SubscriptionPlanController extends Controller
      */
     public function destroy(SubscriptionPlan $subscriptionPlan)
     {
-        $subscriptionPlan->delete();
+        try {
+            // Log the plan data before deletion for debugging
+            Log::info('Deleting subscription plan', [
+                'plan_id' => $subscriptionPlan->id,
+                'stripe_product_id' => $subscriptionPlan->stripe_product_id,
+                'stripe_plan_id' => $subscriptionPlan->stripe_plan_id,
+                'stripe_product_id_type' => gettype($subscriptionPlan->stripe_product_id),
+                'stripe_plan_id_type' => gettype($subscriptionPlan->stripe_plan_id),
+            ]);
 
-        return redirect()->route('admin.subscription-plans.index')
-            ->with('success', 'Subscription plan deleted successfully.');
+            // Ensure Stripe IDs are strings before using them
+            $stripeProductId = is_array($subscriptionPlan->stripe_product_id) 
+                ? (isset($subscriptionPlan->stripe_product_id[0]) ? $subscriptionPlan->stripe_product_id[0] : null)
+                : $subscriptionPlan->stripe_product_id;
+                
+            $stripePlanId = is_array($subscriptionPlan->stripe_plan_id) 
+                ? (isset($subscriptionPlan->stripe_plan_id[0]) ? $subscriptionPlan->stripe_plan_id[0] : null)
+                : $subscriptionPlan->stripe_plan_id;
+
+            // Delete from Stripe first if we have valid IDs
+            if ($stripeProductId && $stripePlanId) {
+                // Create a temporary plan object with corrected IDs
+                $tempPlan = clone $subscriptionPlan;
+                $tempPlan->stripe_product_id = $stripeProductId;
+                $tempPlan->stripe_plan_id = $stripePlanId;
+                
+                $this->stripePlanService->deleteStripePlan($tempPlan);
+            }
+
+            $subscriptionPlan->delete();
+
+            return redirect()->route('admin.subscription-plans.index')
+                ->with('success', 'Subscription plan deleted successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Subscription plan deletion failed: ' . $e->getMessage(), [
+                'plan_id' => $subscriptionPlan->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->route('admin.subscription-plans.index')
+                ->with('error', 'Failed to delete subscription plan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -130,7 +223,20 @@ class SubscriptionPlanController extends Controller
      */
     public function toggleStatus(SubscriptionPlan $subscriptionPlan)
     {
-        $subscriptionPlan->update(['is_active' => !$subscriptionPlan->is_active]);
+        $newStatus = !$subscriptionPlan->is_active;
+        $subscriptionPlan->update(['is_active' => $newStatus]);
+
+        // If activating, create Stripe plan
+        if ($newStatus && !$subscriptionPlan->stripe_plan_id) {
+            $stripeResult = $this->stripePlanService->createStripePlan($subscriptionPlan);
+            
+            if ($stripeResult['success']) {
+                $subscriptionPlan->update([
+                    'stripe_product_id' => $stripeResult['product_id'],
+                    'stripe_plan_id' => $stripeResult['price_id'],
+                ]);
+            }
+        }
 
         return redirect()->route('admin.subscription-plans.index')
             ->with('success', 'Subscription plan status updated successfully.');
@@ -151,5 +257,31 @@ class SubscriptionPlanController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Sync a plan with Stripe (create if doesn't exist)
+     */
+    public function syncWithStripe(SubscriptionPlan $subscriptionPlan)
+    {
+        if (!$subscriptionPlan->is_active) {
+            return redirect()->back()
+                ->with('error', 'Cannot sync inactive plans with Stripe.');
+        }
+
+        $stripeResult = $this->stripePlanService->createStripePlan($subscriptionPlan);
+        
+        if ($stripeResult['success']) {
+            $subscriptionPlan->update([
+                'stripe_product_id' => $stripeResult['product_id'],
+                'stripe_plan_id' => $stripeResult['price_id'],
+            ]);
+            
+            return redirect()->back()
+                ->with('success', 'Plan synced with Stripe successfully.');
+        } else {
+            return redirect()->back()
+                ->with('error', 'Failed to sync with Stripe: ' . $stripeResult['error']);
+        }
     }
 }

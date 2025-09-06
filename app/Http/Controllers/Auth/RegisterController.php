@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Services\StripeCustomerService;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -24,6 +26,8 @@ class RegisterController extends Controller
 
     use RegistersUsers;
 
+    protected $stripeCustomerService;
+
     /**
      * Where to redirect users after registration.
      *
@@ -36,9 +40,10 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(StripeCustomerService $stripeCustomerService)
     {
         $this->middleware('guest');
+        $this->stripeCustomerService = $stripeCustomerService;
     }
 
     /**
@@ -64,10 +69,38 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        try {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'user_type' => 0, // Regular user
+            ]);
+
+            // Create Stripe customer for the new user
+            $stripeResult = $this->stripeCustomerService->createStripeCustomer($user);
+            
+            if ($stripeResult['success']) {
+                Log::info('Stripe customer created during user registration', [
+                    'user_id' => $user->id,
+                    'customer_id' => $stripeResult['customer_id'],
+                ]);
+            } else {
+                Log::warning('Failed to create Stripe customer during registration', [
+                    'user_id' => $user->id,
+                    'error' => $stripeResult['error'],
+                ]);
+                // Don't fail registration if Stripe fails - just log it
+            }
+
+            return $user;
+
+        } catch (\Exception $e) {
+            Log::error('User registration failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 }

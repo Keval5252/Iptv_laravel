@@ -24,6 +24,9 @@
     .btn-group .btn:last-child {
         margin-right: 0;
     }
+    .stripe-status {
+        font-size: 0.8em;
+    }
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -45,6 +48,20 @@
                         </div>
                     @endif
 
+                    @if(session('warning'))
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ session('warning') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead>
@@ -56,6 +73,7 @@
                                     <th>Price</th>
                                     <th>Original Price</th>
                                     <th>Status</th>
+                                    <th>Stripe Status</th>
                                     <th>Popular</th>
                                     <th>Sort Order</th>
                                     <th>Actions</th>
@@ -89,6 +107,19 @@
                                             @endif
                                         </td>
                                         <td>
+                                            @if($plan->stripe_plan_id)
+                                                <span class="badge bg-success stripe-status">
+                                                    <i class="fa fa-check"></i> Synced
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">{{ substr($plan->stripe_plan_id, 0, 20) }}...</small>
+                                            @else
+                                                <span class="badge bg-warning stripe-status">
+                                                    <i class="fa fa-exclamation-triangle"></i> Not Synced
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td>
                                             @if($plan->is_popular)
                                                 <span class="badge bg-warning">Yes</span>
                                             @else
@@ -106,6 +137,12 @@
                                                    class="btn btn-sm btn-outline-info" title="View">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
+                                                @if($plan->is_active && !$plan->stripe_plan_id)
+                                                    <a href="{{ route('admin.subscription-plans.sync-stripe', $plan->id) }}" 
+                                                       class="btn btn-sm btn-outline-success" title="Sync with Stripe">
+                                                        <i class="fa fa-sync"></i>
+                                                    </a>
+                                                @endif
                                                 <form action="{{ route('admin.subscription-plans.toggle-status', $plan->id) }}" 
                                                       method="POST" class="d-inline">
                                                     @csrf
@@ -127,7 +164,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center">No subscription plans found.</td>
+                                        <td colspan="11" class="text-center">No subscription plans found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -182,4 +219,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endsection 
+@endsection

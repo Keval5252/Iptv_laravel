@@ -7,11 +7,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Services\StripeCustomerService;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    protected $stripeCustomerService;
+
+    public function __construct(StripeCustomerService $stripeCustomerService)
+    {
+        $this->stripeCustomerService = $stripeCustomerService;
+    }
+
     public function showLoginForm()
     {
         return view('user.auth.login');
@@ -77,23 +86,52 @@ class AuthController extends Controller
             $counter++;
         }
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'name' => $request->first_name . ' ' . $request->last_name,
-            'user_name' => $userName,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'user_type' => 0, // Regular user
-        ]);
+        try {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'name' => $request->first_name . ' ' . $request->last_name,
+                'user_name' => $userName,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'user_type' => 0, // Regular user
+            ]);
 
-        Auth::login($user);
+            // Create Stripe customer for the new user
+            $stripeResult = $this->stripeCustomerService->createStripeCustomer($user);
+            
+            if ($stripeResult['success']) {
+                Log::info('Stripe customer created during user registration', [
+                    'user_id' => $user->id,
+                    'customer_id' => $stripeResult['customer_id'],
+                ]);
+            } else {
+                Log::warning('Failed to create Stripe customer during registration', [
+                    'user_id' => $user->id,
+                    'error' => $stripeResult['error'],
+                ]);
+                // Don't fail registration if Stripe fails - just log it
+            }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Registration successful!',
-            'redirect' => route('user.dashboard')
-        ]);
+            Auth::login($user);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Registration successful!',
+                'redirect' => route('user.dashboard')
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('User registration failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Registration failed. Please try again.'
+            ]);
+        }
     }
 
     public function logout(Request $request)

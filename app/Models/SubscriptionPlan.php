@@ -19,8 +19,9 @@ class SubscriptionPlan extends Model
         'is_popular',
         'is_active',
         'sort_order',
-        
-        'display_pages'
+        'display_pages',
+        'stripe_plan_id',
+        'stripe_product_id'
     ];
 
     protected $casts = [
@@ -62,19 +63,22 @@ class SubscriptionPlan extends Model
         return $query->whereJsonContains('display_pages', $page);
     }
 
+    // Accessor for formatted price
     public function getFormattedPriceAttribute()
     {
         return '$' . number_format($this->price, 2);
     }
 
+    // Accessor for formatted original price
     public function getFormattedOriginalPriceAttribute()
     {
         return '$' . number_format($this->original_price, 2);
     }
 
+    // Accessor for discount percentage
     public function getDiscountPercentageAttribute()
     {
-        if ($this->original_price > 0) {
+        if ($this->original_price > $this->price) {
             return round((($this->original_price - $this->price) / $this->original_price) * 100);
         }
         return 0;

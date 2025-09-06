@@ -4,18 +4,22 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\StripeCustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class UserAuthController extends Controller
 {
     protected $redirectTo = '/dashboard';
+    protected $stripeCustomerService;
 
-    public function __construct()
+    public function __construct(StripeCustomerService $stripeCustomerService)
     {
         $this->middleware('guest')->except('logout');
+        $this->stripeCustomerService = $stripeCustomerService;
     }
 
     public function showLoginForm()
@@ -79,29 +83,60 @@ class UserAuthController extends Controller
             'postal_code' => 'nullable|string|max:20',
         ]);
 
-        $user = User::create([
-            'name' => $request->first_name . ' ' . $request->last_name,
-            'user_name' => $request->user_name,
-            'user_type' => 2, // 2 = Regular User (1 = Admin)
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state,
-            'country' => $request->country,
-            'postal_code' => $request->postal_code,
-            'gender' => 1, // Default to male (1)
-            'is_notification' => 1, // Default to enabled (1)
-            'status' => 1, // Default to active (1)
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->first_name . ' ' . $request->last_name,
+                'user_name' => $request->user_name,
+                'user_type' => 2, // 2 = Regular User (1 = Admin)
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'country' => $request->country,
+                'postal_code' => $request->postal_code,
+                'gender' => 1, // Default to male (1)
+                'is_notification' => 1, // Default to enabled (1)
+                'status' => 1, // Default to active (1)
+            ]);
 
-        // Use web guard specifically for user authentication
-        Auth::guard('web')->login($user);
+            // Create Stripe customer for the new user
+            $stripeResult = $this->stripeCustomerService->createStripeCustomer($user);
+            
+            if ($stripeResult['success']) {
+                Log::info('Stripe customer created during user registration', [
+                    'user_id' => $user->id,
+                    'customer_id' => $stripeResult['customer_id'],
+                    'controller' => 'UserAuthController',
+                ]);
+            } else {
+                Log::warning('Failed to create Stripe customer during registration', [
+                    'user_id' => $user->id,
+                    'error' => $stripeResult['error'],
+                    'controller' => 'UserAuthController',
+                ]);
+                // Don't fail registration if Stripe fails - just log it
+            }
 
-        return redirect('/subscription-plans');
+            // Use web guard specifically for user authentication
+            Auth::guard('web')->login($user);
+
+            return redirect('/subscription-plans');
+
+        } catch (\Exception $e) {
+            Log::error('User registration failed in UserAuthController', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'email' => $request->email,
+            ]);
+
+            return back()->withErrors([
+                'email' => 'Registration failed. Please try again.',
+            ])->withInput($request->except('password', 'password_confirmation'));
+        }
     }
 
     public function logout(Request $request)

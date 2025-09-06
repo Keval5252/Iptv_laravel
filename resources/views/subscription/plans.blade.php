@@ -418,7 +418,7 @@ body {
         <div class="alert alert-custom alert-dismissible fade show" role="alert">
             <i class="fas fa-info-circle me-2"></i>
             You currently have an active subscription: <strong>{{ $activeSubscription->subscriptionPlan->name }}</strong>
-            <a href="{{ route('subscription.dashboard') }}" class="btn btn-sm btn-outline-light ms-3">View Dashboard</a>
+            <a href="{{ route('subscription.dashboard') }}" class="btn btn-sm btn-outline-light ms-3">View Dashboard</button>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
         </div>
     @endif
@@ -497,13 +497,13 @@ body {
                                         <i class="fas fa-check me-2"></i>Current Plan
                                     </button>
                                 @elseif(Auth::check())
-                                    <a href="{{ route('subscription.purchase', $plan->id) }}" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}">
+                                    <button onclick="createStripeSubscription({{ $plan->id }})" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}" id="subscribe-btn-{{ $plan->id }}">
                                         <i class="fas fa-rocket me-2"></i>Subscribe Now
-                                    </a>
+                                    </button>
                                 @else
                                     <a href="{{ route('user.login') }}" class="plan-button {{ isset($plan->is_popular) && $plan->is_popular ? 'featured' : '' }}">
                                         <i class="fas fa-sign-in-alt me-2"></i>Login to Subscribe
-                                    </a>
+                                    </button>
                                 @endif
                             </div>
                         </div>
@@ -540,11 +540,11 @@ body {
                                 @if(Auth::check())
                                     <a href="#" class="plan-button {{ $plan['featured'] ? 'featured' : '' }}">
                                         <i class="fas fa-rocket me-2"></i>Subscribe Now
-                                    </a>
+                                    </button>
                                 @else
                                     <a href="{{ route('user.login') }}" class="plan-button {{ $plan['featured'] ? 'featured' : '' }}">
                                         <i class="fas fa-sign-in-alt me-2"></i>Login to Subscribe
-                                    </a>
+                                    </button>
                                 @endif
                             </div>
                         </div>
@@ -606,4 +606,54 @@ body {
         </div>
     </div>
 </section>
+@endsection
+
+@section('scripts')
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ config('services.stripe.key') }}');
+
+async function createStripeSubscription(planId) {
+    const button = document.getElementById(`subscribe-btn-${planId}`);
+    const originalText = button.innerHTML;
+    
+    // Show loading state
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    button.disabled = true;
+    
+    try {
+        const response = await fetch(`/subscription/${planId}/create-stripe-subscription`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Confirm the subscription with Stripe
+        const { error } = await stripe.confirmCardPayment(data.client_secret);
+        
+        if (error) {
+            throw new Error(error.message);
+        }
+        
+        // Redirect to success page
+        window.location.href = '/subscription/confirm-stripe-subscription';
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Subscription failed: ' + error.message);
+        
+        // Reset button
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }
+}
+</script>
 @endsection

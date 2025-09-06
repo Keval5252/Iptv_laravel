@@ -1,20 +1,59 @@
 <?php
 
-namespace Database\Seeders;
+namespace App\Console\Commands;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use Illuminate\Console\Command;
 use App\Models\SubscriptionPlan;
 use App\Services\StripePlanService;
 use Illuminate\Support\Facades\Log;
 
-class SubscriptionPlanSeeder extends Seeder
+class SeedSubscriptionPlansWithStripe extends Command
 {
     /**
-     * Run the database seeds.
+     * The name and signature of the console command.
+     *
+     * @var string
      */
-    public function run(): void
+    protected $signature = 'seed:subscription-plans-stripe 
+                            {--force : Force recreate all plans even if they exist}
+                            {--skip-stripe : Skip Stripe integration and only create database records}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Seed subscription plans with Stripe integration';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
     {
+        $this->info('🚀 Starting subscription plan seeding with Stripe integration...');
+        $this->newLine();
+
+        $force = $this->option('force');
+        $skipStripe = $this->option('skip-stripe');
+
+        if ($force) {
+            $this->warn('⚠️  Force mode enabled - existing plans will be deleted!');
+            if (!$this->confirm('Are you sure you want to continue?')) {
+                $this->info('Operation cancelled.');
+                return;
+            }
+            
+            // Delete existing plans
+            $this->info('🗑️  Deleting existing subscription plans...');
+            $existingPlans = SubscriptionPlan::all();
+            foreach ($existingPlans as $plan) {
+                $this->info("  Deleting: {$plan->name}");
+                $plan->delete();
+            }
+            $this->info('✓ Existing plans deleted.');
+            $this->newLine();
+        }
+
         $stripeService = new StripePlanService();
         
         $plans = [
@@ -214,54 +253,89 @@ class SubscriptionPlanSeeder extends Seeder
             ]
         ];
 
-        $this->command->info('Starting subscription plan seeding with Stripe integration...');
-        
+        $successCount = 0;
+        $errorCount = 0;
+        $stripeSuccessCount = 0;
+        $stripeErrorCount = 0;
+
+        $progressBar = $this->output->createProgressBar(count($plans));
+        $progressBar->start();
+
         foreach ($plans as $index => $planData) {
-            $this->command->info("Creating plan: {$planData['name']}...");
-            
             try {
-                // Create the plan in the database first
-                $plan = SubscriptionPlan::create($planData);
-                $this->command->info("✓ Database record created for: {$plan->name}");
-                
-                // Create corresponding Stripe product and price
-                $stripeResult = $stripeService->createStripePlan($plan);
-                
-                if ($stripeResult['success']) {
-                    // Update the plan with Stripe IDs
-                    $plan->update([
-                        'stripe_product_id' => $stripeResult['product_id'],
-                        'stripe_plan_id' => $stripeResult['price_id']
-                    ]);
-                    
-                    $this->command->info("✓ Stripe integration completed for: {$plan->name}");
-                    $this->command->info("  - Product ID: {$stripeResult['product_id']}");
-                    $this->command->info("  - Price ID: {$stripeResult['price_id']}");
-                } else {
-                    $this->command->warn("⚠ Stripe integration failed for: {$plan->name}");
-                    $this->command->warn("  Error: {$stripeResult['error']}");
-                    $this->command->warn("  Plan created in database but not in Stripe");
+                // Check if plan already exists (unless force mode)
+                if (!$force && SubscriptionPlan::where('name', $planData['name'])->exists()) {
+                    $this->warn("⚠️  Plan '{$planData['name']}' already exists. Skipping...");
+                    $progressBar->advance();
+                    continue;
                 }
-                
+
+                // Create the plan in the database
+                $plan = SubscriptionPlan::create($planData);
+                $successCount++;
+
+                // Create Stripe integration (unless skipped)
+                if (!$skipStripe) {
+                    $stripeResult = $stripeService->createStripePlan($plan);
+                    
+                    if ($stripeResult['success']) {
+                        // Update the plan with Stripe IDs
+                        $plan->update([
+                            'stripe_product_id' => $stripeResult['product_id'],
+                            'stripe_plan_id' => $stripeResult['price_id']
+                        ]);
+                        $stripeSuccessCount++;
+                    } else {
+                        $stripeErrorCount++;
+                        $this->error("❌ Stripe integration failed for: {$plan->name}");
+                        $this->error("   Error: {$stripeResult['error']}");
+                    }
+                }
+
             } catch (\Exception $e) {
-                $this->command->error("✗ Failed to create plan: {$planData['name']}");
-                $this->command->error("  Error: {$e->getMessage()}");
+                $errorCount++;
+                $this->error("❌ Failed to create plan: {$planData['name']}");
+                $this->error("   Error: {$e->getMessage()}");
                 
-                Log::error("Subscription plan seeder failed for plan: {$planData['name']}", [
+                Log::error("Subscription plan command failed for plan: {$planData['name']}", [
                     'plan_data' => $planData,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
             }
-            
+
+            $progressBar->advance();
+
             // Add a small delay to avoid rate limiting
             if ($index < count($plans) - 1) {
                 sleep(1);
             }
         }
-        
-        $this->command->info('');
-        $this->command->info('Subscription plan seeding completed!');
-        $this->command->info('Check your Stripe dashboard to see the created products and prices.');
+
+        $progressBar->finish();
+        $this->newLine(2);
+
+        // Display results
+        $this->info('📊 Seeding Results:');
+        $this->table(
+            ['Metric', 'Count'],
+            [
+                ['Database Records Created', $successCount],
+                ['Database Errors', $errorCount],
+                ['Stripe Integrations Success', $stripeSuccessCount],
+                ['Stripe Integrations Failed', $stripeErrorCount],
+            ]
+        );
+
+        if ($stripeSuccessCount > 0) {
+            $this->info('✅ Check your Stripe dashboard to see the created products and prices.');
+        }
+
+        if ($stripeErrorCount > 0) {
+            $this->warn('⚠️  Some Stripe integrations failed. Check the logs for details.');
+        }
+
+        $this->newLine();
+        $this->info('🎉 Subscription plan seeding completed!');
     }
 }

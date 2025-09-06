@@ -70,28 +70,52 @@
                                     <th>Sort Order:</th>
                                     <td>{{ $subscriptionPlan->sort_order }}</td>
                                 </tr>
-                                        </a>
+                                <tr>
+                                    <th>Stripe Status:</th>
+                                    <td>
+                                        @if($subscriptionPlan->stripe_plan_id)
+                                            <span class="badge bg-success">
+                                                <i class="fa fa-check"></i> Synced
+                                            </span>
+                                            <br>
+                                            <small class="text-muted">{{ substr($subscriptionPlan->stripe_plan_id, 0, 20) }}...</small>
+                                        @else
+                                            <span class="badge bg-warning">
+                                                <i class="fa fa-exclamation-triangle"></i> Not Synced
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
-                                @endif
+                                <tr>
+                                    <th>Display Pages:</th>
+                                    <td>
+                                        @if($subscriptionPlan->display_pages && count($subscriptionPlan->display_pages) > 0)
+                                            @foreach($subscriptionPlan->display_pages as $page)
+                                                <span class="badge bg-primary me-1">{{ ucfirst(str_replace('-', ' ', $page)) }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted">No pages selected</span>
+                                        @endif
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <h5>Features</h5>
-                                                                @if($subscriptionPlan->features && count($subscriptionPlan->features) > 0)
-                                        <ul class="list-group">
-                                            @foreach($subscriptionPlan->features as $feature)
-                                                <li class="list-group-item">
-                                                    <i class="fa fa-check text-success me-2"></i>
-                                                    {{ $feature }}
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <div class="alert alert-info">
-                                            <i class="fa fa-info-circle"></i> No features added for this plan.
-                                        </div>
-                                    @endif
+                            @if($subscriptionPlan->features && count($subscriptionPlan->features) > 0)
+                                <ul class="list-group">
+                                    @foreach($subscriptionPlan->features as $feature)
+                                        <li class="list-group-item">
+                                            <i class="fa fa-check text-success me-2"></i>
+                                            {{ $feature }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i> No features added for this plan.
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -125,6 +149,7 @@
                                                         @endif
                                                     </ul>
                                                 @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -136,4 +161,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

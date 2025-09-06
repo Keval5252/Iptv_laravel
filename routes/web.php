@@ -125,10 +125,10 @@ Route::name('admin.')->group(function () {
         Route::post('/password/change', [UserController::class, 'change_password'])->name('password.update');
         Route::post('/profile/update', [UserController::class, 'update_profile'])->name('profile.update');
 
-        // Subscription Plans Management
-        Route::resource('subscription-plans', \App\Http\Controllers\Admin\SubscriptionPlanController::class);
-        Route::post('subscription-plans/{subscriptionPlan}/toggle-status', [\App\Http\Controllers\Admin\SubscriptionPlanController::class, 'toggleStatus'])->name('subscription-plans.toggle-status');
-        Route::post('subscription-plans/update-order', [\App\Http\Controllers\Admin\SubscriptionPlanController::class, 'updateOrder'])->name('subscription-plans.update-order');
+        Route::resource("subscription-plans", \App\Http\Controllers\Admin\SubscriptionPlanController::class);
+        Route::post("subscription-plans/{subscriptionPlan}/toggle-status", [\App\Http\Controllers\Admin\SubscriptionPlanController::class, "toggleStatus"])->name("subscription-plans.toggle-status");
+        Route::post("subscription-plans/update-order", [\App\Http\Controllers\Admin\SubscriptionPlanController::class, "updateOrder"])->name("subscription-plans.update-order");
+        Route::get("subscription-plans/{subscriptionPlan}/sync-stripe", [\App\Http\Controllers\Admin\SubscriptionPlanController::class, "syncWithStripe"])->name("subscription-plans.sync-stripe");
 
         // Menu Management
         Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class);
@@ -145,3 +145,11 @@ Route::name('admin.')->group(function () {
 });
 
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+// Stripe Subscription Routes
+Route::middleware(['auth', 'user.only'])->group(function () {
+    Route::post('/subscription/{plan}/create-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'createSubscription'])->name('subscription.create-stripe');
+    Route::post('/subscription/confirm-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'confirmSubscription'])->name('subscription.confirm-stripe');
+    Route::post('/subscription/cancel-stripe-subscription', [\App\Http\Controllers\StripeSubscriptionController::class, 'cancelSubscription'])->name('subscription.cancel-stripe');
+});
+
