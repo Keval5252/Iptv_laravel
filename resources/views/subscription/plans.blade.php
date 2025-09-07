@@ -412,12 +412,102 @@ body {
 }
 
 .alert-custom {
-    background: rgba(102, 126, 234, 0.1);
-    border: 1px solid rgba(102, 126, 234, 0.3);
-    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.4);
+    border-radius: 16px;
     color: var(--text-light);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
     margin-bottom: 2rem;
+    padding: 20px 24px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alert-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-gradient);
+}
+
+.alert-custom i {
+    font-size: 1.25rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    flex-shrink: 0;
+}
+
+.alert-custom .btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
+    font-size: 0.875rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.alert-custom .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-light);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-close:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .alert-custom {
+        padding: 16px 20px;
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .alert-custom .btn {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+    
+    .btn-close {
+        position: static;
+        margin-top: 8px;
+    }
 }
 
 .section-title {
@@ -523,7 +613,7 @@ body {
         <div class="alert alert-custom alert-dismissible fade show" role="alert">
             <i class="fas fa-info-circle me-2"></i>
             You currently have an active subscription: <strong>{{ $activeSubscription->subscriptionPlan->name }}</strong>
-            <a href="{{ route('subscription.dashboard') }}" class="btn btn-sm btn-outline-light ms-3">View Dashboard</button>
+            <a href="{{ route('subscription.dashboard') }}" class="btn btn-sm btn-outline-light ms-3">View Dashboard</a>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
         </div>
     @endif
