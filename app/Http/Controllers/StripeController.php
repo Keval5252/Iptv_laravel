@@ -130,6 +130,9 @@ class StripeController extends Controller
                 $this->handlePaymentFailed($event->data->object);
                 break;
             case 'customer.subscription.deleted':
+            case "customer.subscription.updated":
+                $this->handleSubscriptionUpdated($event->data->object);
+                break;
                 $this->handleSubscriptionDeleted($event->data->object);
                 break;
         }
@@ -234,4 +237,24 @@ class StripeController extends Controller
             ]);
         }
     }
-}
+
+    private function handleSubscriptionUpdated($subscription)
+    {
+        $userSubscription = UserSubscription::where("stripe_subscription_id", $subscription->id)->first();
+        
+        if ($userSubscription && $subscription->status === "active") {
+            // Update subscription status
+            $userSubscription->update([
+                "status" => "active",
+            ]);
+            
+            // Update any pending payments for this subscription
+            StripePayment::where("stripe_subscription_id", $subscription->id)
+                ->where("status", "pending")
+                ->update([
+                    "status" => "succeeded",
+                    "paid_at" => now(),
+                ]);
+        }
+    }
+    }

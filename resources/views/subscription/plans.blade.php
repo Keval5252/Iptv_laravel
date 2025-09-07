@@ -411,20 +411,33 @@ body {
     font-size: 1rem;
 }
 
+/* Alert Container Spacing */
+.container:has(.alert-custom) {
+    margin-bottom: 3rem;
+/* Alert Container Spacing - Fallback */
+.alert-container {
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+}
+    padding-top: 2rem;
+}
+
 .alert-custom {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
-    border: 1px solid rgba(102, 126, 234, 0.4);
-    border-radius: 16px;
-    color: var(--text-light);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 20px;
+    color: #ffffff;
     backdrop-filter: blur(20px);
     margin-bottom: 2rem;
-    padding: 20px 24px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+    padding: 24px 28px;
+    box-shadow: 0 12px 40px rgba(34, 197, 94, 0.25);
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    border-left: 5px solid #22c55e;
+    animation: slideInDown 0.6s ease-out;
 }
 
 .alert-custom::before {
@@ -432,22 +445,146 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--primary-gradient);
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #22c55e, #10b981, #059669);
+    animation: shimmer 2s infinite;
 }
 
 .alert-custom i {
-    font-size: 1.25rem;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 1.5rem;
+    color: #22c55e;
     flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(34, 197, 94, 0.3));
+}
+
+.alert-custom strong {
+    color: #22c55e;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .alert-custom .btn {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    color: #ffffff;
+    padding: 8px 20px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+}
+
+.alert-custom .btn:hover {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: #22c55e;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+.alert-custom .btn-close {
     background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    margin-left: auto;
+}
+
+.alert-custom .btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Plans Container Spacing */
+.plans-container {
+    margin-top: 2rem;
+    padding-top: 2rem;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+    color: #22c55e;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.alert-custom .btn {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    color: #ffffff;
+    padding: 8px 20px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+}
+
+.alert-custom .btn:hover {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: #22c55e;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+.alert-custom .btn-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    margin-left: auto;
+}
+
+.alert-custom .btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-light);
     font-size: 0.875rem;
@@ -585,7 +722,7 @@ body {
 @section('content')
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="container">
+    <div class="container alert-container">
         <div class="hero-content">
             <h1 class="hero-title">Choose Your Perfect Plan</h1>
             <p class="hero-subtitle">Experience premium IPTV streaming with crystal-clear quality, unlimited channels, and unmatched reliability. Select the plan that fits your entertainment needs.</p>
@@ -594,7 +731,7 @@ body {
 </section>
 
 <!-- Alerts Section -->
-<div class="container">
+<div class="container alert-container">
     @if(session('success'))
         <div class="alert alert-custom alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
@@ -778,7 +915,7 @@ body {
 </div>
 <!-- Features Section -->
 <section class="features-section">
-    <div class="container">
+    <div class="container alert-container">
         <div class="text-center mb-5">
             <h2 class="section-title">Why Choose Our IPTV Service?</h2>
             <p class="section-subtitle">Experience the future of television with our cutting-edge technology and premium features</p>

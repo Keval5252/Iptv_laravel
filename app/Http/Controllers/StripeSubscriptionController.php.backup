@@ -200,23 +200,15 @@ class StripeSubscriptionController extends Controller
                 'latest_invoice_status' => $stripeSubscription->latest_invoice->status ?? 'unknown'
             ]);
             
-            if ($stripeSubscription->status === "active") {
+            if ($stripeSubscription->status === 'active') {
                 // Update local subscription
                 $userSubscription->update([
-                    "status" => "active",
-                    "stripe_subscription_id" => $stripeSubscription->id,
+                    'status' => 'active',
+                    'stripe_subscription_id' => $stripeSubscription->id,
                 ]);
 
-                // Update payment status to succeeded
-                StripePayment::where("stripe_subscription_id", $stripeSubscription->id)
-                    ->where("user_id", $user->id)
-                    ->update([
-                        "status" => "succeeded",
-                        "paid_at" => now(),
-                    ]);
-
-                return redirect()->route("subscription.dashboard")
-                    ->with("success", "Your subscription has been activated successfully!");
+                return redirect()->route('subscription.dashboard')
+                    ->with('success', 'Your subscription has been activated successfully!');
             } else {
                 // Update status based on Stripe status
                 $userSubscription->update([
