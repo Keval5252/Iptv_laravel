@@ -247,9 +247,9 @@ class StripeController extends Controller
             $userSubscription->update([
                 "status" => "active",
             ]);
-            
             // Update any pending payments for this subscription
-            StripePayment::where("stripe_subscription_id", $subscription->id)
+            StripePayment::where("user_id", $userSubscription->user_id)
+                ->where("subscription_plan_id", $userSubscription->subscription_plan_id)
                 ->where("status", "pending")
                 ->update([
                     "status" => "succeeded",

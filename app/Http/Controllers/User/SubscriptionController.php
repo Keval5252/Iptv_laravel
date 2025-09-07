@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
+use AppModelsStripePayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -107,20 +108,36 @@ class SubscriptionController extends Controller
             }
 
             $paymentIntent = $paymentIntentResponse->json();
+            if ($paymentIntent["status"] === "succeeded") {
+                // Create payment record first
+                $payment = StripePayment::create([
+                    "user_id" => $user->id,
+                    "subscription_plan_id" => $plan->id,
+                    "stripe_payment_intent_id" => $paymentIntent["id"],
+                    "stripe_customer_id" => $user->stripe_customer_id,
+                    "amount" => $plan->price,
+                    "currency" => "usd",
+                    "status" => "succeeded",
+                    "paid_at" => now(),
+                    "metadata" => [
+                        "plan_name" => $plan->name,
+                        "plan_duration" => $plan->duration,
+                    ],
+                ]);
 
-            if ($paymentIntent['status'] === 'succeeded') {
                 // Create user subscription
                 $subscription = UserSubscription::create([
-                    'user_id' => $user->id,
-                    'subscription_plan_id' => $plan->id,
-                    'stripe_payment_intent_id' => $paymentIntent['id'],
-                    'status' => 'active',
-                    'starts_at' => now(),
-                    'ends_at' => now()->addMonths($this->getDurationInMonths($plan->duration)),
-                    'amount_paid' => $plan->price,
-                    'metadata' => [
-                        'stripe_payment_intent' => $paymentIntent['id'],
-                        'plan_name' => $plan->name,
+                    "user_id" => $user->id,
+                    "subscription_plan_id" => $plan->id,
+                    "stripe_payment_intent_id" => $paymentIntent["id"],
+                    "status" => "active",
+                    "starts_at" => now(),
+                    "ends_at" => now()->addMonths($this->getDurationInMonths($plan->duration)),
+                    "amount_paid" => $plan->price,
+                    "metadata" => [
+                        "stripe_payment_intent" => $paymentIntent["id"],
+                        "plan_name" => $plan->name,
+                        "payment_id" => $payment->id,
                     ],
                 ]);
 

@@ -208,8 +208,9 @@ class StripeSubscriptionController extends Controller
                 ]);
 
                 // Update payment status to succeeded
-                StripePayment::where("stripe_subscription_id", $stripeSubscription->id)
-                    ->where("user_id", $user->id)
+                StripePayment::where("user_id", $user->id)
+                    ->where("subscription_plan_id", $userSubscription->subscription_plan_id)
+                    ->where("status", "pending")
                     ->update([
                         "status" => "succeeded",
                         "paid_at" => now(),
